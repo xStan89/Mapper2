@@ -78,7 +78,7 @@
       border-radius: 20px;
       border: none;
       cursor: pointer;
-      background: var(--panel-grey);
+      background: var(--main-yellow);
       color: var(--text-black);
       font-size: 15px;
       display: flex;
@@ -98,7 +98,7 @@
       border-radius: 20px;
       border: none;
       cursor: pointer;
-      background: var(--panel-grey);
+      background: var(--main-yellow);
       color: var(--text-black);
       font-size: 16px;
       display: flex;
@@ -150,7 +150,7 @@
       font-family: var(--font-family); 
     }
     #search-btn { 
-      padding: 8px 8px; 
+      padding: 1px 8px; 
       border-radius: 4px; 
       border: none; 
       cursor: pointer; 
@@ -158,6 +158,7 @@
       color: var(--text-black);
       font-family: var(--font-family);
       flex-shrink: 0;
+      font-size: 18px;
       white-space: nowrap;
     }
     #clear-btn { 
@@ -283,8 +284,9 @@
       }
       
       #search-btn {
-        padding: 4px 6px;
-        font-size: 12px;
+        height: 26px;
+        padding: 0px 6px;
+        font-size: 16px;
       }
       
       #clear-btn {
@@ -293,6 +295,7 @@
       }
       
       #story-btn {
+        height: 26px;
         grid-column: 2;
         grid-row: 1;
         width: auto !important;
@@ -388,8 +391,8 @@
       border-radius: 4px;
       border: none;
       cursor: pointer;
-      background: var(--story-blue);
-      color: white;
+      background: var(--main-yellow);
+      color: black;
       font-family: var(--font-family);
       font-weight: bold;
       flex-shrink: 0;
@@ -407,7 +410,7 @@
     }
 
     #story-btn:hover {
-      background: var(--story-blue-hover);
+      background: var(--light-yellow);
     }
 
     #story-nav-container {
@@ -422,7 +425,7 @@
     }
 
     .story-nav-btn {
-      padding: 6px 6px;
+      padding: 6px 8px;
       /* align-items: bottom;
       padding-top: 6px;
       padding-top: 12px;
@@ -431,8 +434,8 @@
       border-radius: 4px;
       border: none;
       cursor: pointer;
-      background: var(--story-blue);
-      color: white;
+      background: var(--main-yellow);
+      color: black;
       font-family: var(--font-family);
       font-weight: bold;
       font-size: 13px;
@@ -441,7 +444,7 @@
     }
 
     .story-nav-btn:hover:not(:disabled) {
-      background: var(--story-blue-hover);
+      background: var(--light-yellow);
     }
 
     .story-nav-btn:disabled {
@@ -449,14 +452,42 @@
       cursor: not-allowed;
     }
 
+    .exit-story-nav-btn {
+      padding: 6px 8px;
+      /* align-items: bottom;
+      padding-top: 6px;
+      padding-top: 12px;
+      padding-left: 6px;
+      padding-right: 6px; */
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      background: var(--light-grey);
+      color: black;
+      font-family: var(--font-family);
+      font-weight: bold;
+      font-size: 13px;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .exit-story-nav-btn:hover:not(:disabled) {
+      background: var(--panel-grey);
+    }
+
+    .exit-story-nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     @keyframes outlinePulse {
       0%, 100% { 
-        outline: 0px solid var(--story-blue);
+        outline: 0px solid var(--main-yellow);
         outline-offset: 0px;
         opacity: 1;
       }
       50% { 
-        outline: 0px solid var(--story-blue-hover);
+        outline: 0px solid var(--light-yellow);
         outline-offset: 0px;
         opacity: 0.8;
       }
@@ -592,7 +623,12 @@
       }
       
       .story-nav-btn {
-        padding: 5px 5px !important;
+        padding: 6px 7px !important;
+        font-size: 11px !important;
+      }
+
+      .exit-story-nav-btn {
+        padding: 6px 7px !important;
         font-size: 11px !important;
       }
     }
@@ -627,7 +663,7 @@
       <div id="controls">
         <div id="search-box">
           <input id="search-input" placeholder="Search..." />
-          <button id="search-btn">🔍︎</button>
+          <button id="search-btn">⌕</button>
           <button id="clear-btn">Clear</button>
         </div>
       </div>
@@ -640,7 +676,7 @@
       </div>
         <button id="story-prev-btn" class="story-nav-btn">◄ Back</button>
         <button id="story-next-btn" class="story-nav-btn">Next ►</button>
-        <button id="story-exit-btn" class="story-nav-btn">Exit Story</button>
+        <button id="story-exit-btn" class="exit-story-nav-btn">Exit Story</button>
         <div class="view-title" id="view-title"></div>
         <img class="view-image" id="view-image" style="display: none;" />
         <div class="view-text" id="view-text"></div>
@@ -648,7 +684,7 @@
 
 
       <div id="node-info">
-        <div id="node-title">Click/hover on map or start story</div>
+        <div id="node-title">Click/hover on map, search for a person/group or click Start Story</div>
         <div id="node-meta" class="muted" style="margin-top:6px;"></div>
       </div>
 
@@ -2823,7 +2859,7 @@
   }
 
   function clearInfoPanel() {
-    nodeTitleEl.html('Click/hover on map or start story');
+    nodeTitleEl.html('Click/hover on map, search for a person/group or click Start Story');
     nodeMetaEl.text('');
     nodeLinkEl.html('');
     connectionsBox.innerHTML = '';
