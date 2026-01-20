@@ -248,13 +248,14 @@
       #graph-area {
         flex: 1;
         height: auto;
+        max-height: 60vh;
       }
       
       #info-panel {
         width: 100%;
         min-width: 100%;
         max-width: 100%;
-        height: 50vh;
+        height: 40vh;
         padding: 12px;
         border-left: none;
         border-top: 2px solid var(--shadow-grey);
@@ -338,7 +339,7 @@
         grid-column: 1 / -1;
         grid-row: 6;
         overflow: auto;
-        min-height: 0;
+        min-height: 2;
       }
       
       /* Row 7: Message */
@@ -648,7 +649,7 @@
         <div id="zoom-controls">
           <button id="zoom-in" class="zoom-btn" title="Zoom In">+</button>
           <button id="zoom-out" class="zoom-btn" title="Zoom Out">–</button>
-          <button id="zoom-reset" class="zoom-btn" title="Reset Zoom">⌞⌝</button>
+          <button id="zoom-reset" class="zoom-btn" title="Fit to Screen">⌞⌝</button>
           <button id="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
         </div>
       </div>
@@ -685,7 +686,7 @@
 
       <div id="node-info">
         <div id="node-title">Click/hover on map, search for a person/group or click Start Story</div>
-        <div id="node-meta" class="muted" style="margin-top:6px;"></div>
+        <!-- <div id="node-meta" class="muted" style="margin-top:6px;"></div> -->
       </div>
 
       <div id="node-links"></div>
@@ -815,7 +816,7 @@
   const clearBtn = document.getElementById('clear-btn');
   const suggestionsEl = d3.select('#suggestions');
   const nodeTitleEl = d3.select('#node-title');
-  const nodeMetaEl = d3.select('#node-meta');
+  // const nodeMetaEl = d3.select('#node-meta');
   const nodeLinkEl = d3.select('#node-links');
   const connectionsBox = document.getElementById('connections-box');
   const msgEl = d3.select('#msg');
@@ -1756,16 +1757,6 @@
     const desc = (d.raw && (d.raw['Description'] || '')) || '';
     const category = (d.raw && (d.raw['Category'] || '')) || '';
 
-    // const rawLink = (d.raw && (d.raw['Link'] || d.raw['Link '])) || '';
-    // const safe = normalizeUrl(rawLink);
-    // const rawMoreInfo = (d.raw && (d.raw['DeSmog Profile'] || d.raw['DeSmog Profile'])) || '';
-    // const safeMoreInfo = normalizeUrl(rawMoreInfo);
-
-    // let links = [];
-    // if (safe) links.push(`<a href="${safe}" target="_blank" rel="noopener">More Info</a>`);
-    // if (safeMoreInfo) links.push(`<a href="${safeMoreInfo}" target="_blank" rel="noopener">DeSmog Profile</a>`);
-    // const linksHTML = links.length > 0 ? links.join(' | ') : '';
-
     entityModalTitle.html(`
       <div style="display:flex; align-items:center; gap:8px; font-size:24px; font-weight:700;">
         <span>${d.name}</span>
@@ -2658,6 +2649,32 @@
     zoomLevel = 1.0;
     panX = 0;
     panY = 0;
+    
+    // CRITICAL: Clear inline styles that lock canvas size!
+    // resizeCanvas() sets inline styles, which prevent proper resizing
+    canvas.style.width = '';
+    canvas.style.height = '';
+    
+    // Force reflow so getBoundingClientRect() reads the CSS size
+    void canvas.offsetHeight;
+    
+    // Now resize canvas (will read correct CSS dimensions)
+    resizeCanvas();
+    
+    // Rescale nodes to fit the actual available space
+    if (nodes.length > 0 && originalDataBounds) {
+      scaleNodesToFit();
+    }
+    
+    // Update simulation center
+    if (simulation && simulation.force) { 
+      const c = simulation.force('center'); 
+      if (c) {
+        c.x((canvas.width/(devicePixelRatio))/2);
+        c.y((canvas.height/(devicePixelRatio))/2);
+      }
+    }
+    
     updateCanvasCursor();
     render();
   }
@@ -2703,7 +2720,8 @@
       fullscreenBtn.title = 'Enter Fullscreen';
     }
     
-    // Force immediate reflow and resize
+    // Force immediate reflow and resize with multiple attempts
+    // This ensures proper resizing especially on mobile
     setTimeout(() => {
       // Force browser to reflow layout
       const wrapper = document.getElementById('wrap');
@@ -2718,13 +2736,30 @@
       canvas.style.width = '';
       canvas.style.height = '';
       
-      // Now dispatch resize event
-      window.dispatchEvent(new Event('resize'));
+      // Trigger resize and rescale
+      resizeCanvas();
+      if (nodes.length > 0 && originalDataBounds) {
+        scaleNodesToFit();
+      }
+      render();
+    }, 50);
+    
+    // Second attempt after initial reflow
+    setTimeout(() => {
+      resizeCanvas();
+      if (nodes.length > 0 && originalDataBounds) {
+        scaleNodesToFit();
+      }
+      render();
     }, 150);
     
-    // Second resize after fullscreen animation completes
+    // Final resize after fullscreen animation completes
     setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
+      resizeCanvas();
+      if (nodes.length > 0 && originalDataBounds) {
+        scaleNodesToFit();
+      }
+      render();
     }, 500);
   }
 
@@ -2860,7 +2895,7 @@
 
   function clearInfoPanel() {
     nodeTitleEl.html('Click/hover on map, search for a person/group or click Start Story');
-    nodeMetaEl.text('');
+    // nodeMetaEl.text('');
     nodeLinkEl.html('');
     connectionsBox.innerHTML = '';
   }
