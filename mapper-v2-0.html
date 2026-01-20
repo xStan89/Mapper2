@@ -46,7 +46,7 @@
     #logo {
       position: absolute;
       bottom: 6px;
-      right: 22px;
+      left: 22px;
       z-index: 10;
       opacity: 1;
       pointer-events: none;
@@ -61,7 +61,7 @@
     #top-controls {
       position: absolute;
       top: 12px;
-      right: 12px;
+      left: 12px;
       display: flex;
       gap: 12px;
       z-index: 10;
@@ -101,7 +101,7 @@
       max-height: 1000px;
       background: var(--highlight-white);
       color: var(--text-black);
-      padding: 12px;
+      padding: 12px 20px 12px 12px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -262,7 +262,7 @@
     #story-nav-container {
       display: none;
       gap: 4px;
-      margin-top: 14px;
+      margin-bottom: 14px;
       flex-shrink: 0;
     }
 
@@ -271,7 +271,13 @@
     }
 
     .story-nav-btn {
+      width: 78px;
       padding: 8px 6px;
+      /* align-items: bottom;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      padding-left: 6px;
+      padding-right: 6px; */
       border-radius: 4px;
       border: none;
       cursor: pointer;
@@ -350,6 +356,19 @@
     /* VIEW CONTENT STYLES */
     #view-content {
       display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    #view-content.active {
+      display: flex;
+    }
+    #view-content {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
     }
 
     #view-content.active {
@@ -359,15 +378,16 @@
     .view-title {
       font-size: 28px;
       font-weight: 700;
+      margin-top: 12px;
       margin-bottom: 12px;
       color: var(--text-black);
     }
 
     .view-progress {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--shadow-grey);
-      margin-bottom: 12px;
+      margin-top: 4px;
     }
 
     .view-image {
@@ -384,8 +404,10 @@
       line-height: 1.5;
       white-space: pre-wrap;
       word-wrap: break-word;
-      max-height: 33vw;
+      flex: 1;
       overflow-y: auto;
+      padding-bottom: 12px;
+      min-height: 0;
     }
 
     /* responsive
@@ -430,20 +452,20 @@
       <div id="suggestions"></div>
 
       <div id="view-content">
+      <div id="story-nav-container">
         <div class="view-progress" id="view-progress"></div>
+      </div>
+        <button id="story-prev-btn" class="story-nav-btn">◄ Back</button>
+        <button id="story-next-btn" class="story-nav-btn">Next ►</button>
+        <button id="story-exit-btn" class="story-nav-btn">Exit Story</button>
         <div class="view-title" id="view-title"></div>
         <img class="view-image" id="view-image" style="display: none;" />
         <div class="view-text" id="view-text"></div>
       </div>
 
-      <div id="story-nav-container">
-        <button id="story-prev-btn" class="story-nav-btn">◀ Back</button>
-        <button id="story-next-btn" class="story-nav-btn">Next ▶</button>
-        <button id="story-exit-btn" class="story-nav-btn">Exit Story</button>
-      </div>
 
       <div id="node-info">
-        <div id="node-title">Select a node or start story</div>
+        <div id="node-title">Click/hover on map or start story</div>
         <div id="node-meta" class="muted" style="margin-top:6px;"></div>
       </div>
 
@@ -533,6 +555,7 @@
   let simulation = null;
   let selectedNode = null;
   let hoveredNode = null;
+  let hoveredConnection = null; // {source, target} for connection hover
   let isDragging = false;
   let isDraggingNode = false;
   let draggedNode = null;
@@ -1492,7 +1515,7 @@
     }
     
     // Update text
-    viewText.textContent = view.text;
+    viewText.innerHTML = processHtmlLinks(view.text);
     
     // Update navigation buttons
     storyPrevBtn.disabled = currentViewIndex === 0;
@@ -1513,27 +1536,26 @@
     const desc = (d.raw && (d.raw['Description'] || '')) || '';
     const category = (d.raw && (d.raw['Category'] || '')) || '';
 
-    const rawLink = (d.raw && (d.raw['Link'] || d.raw['Link '])) || '';
-    const safe = normalizeUrl(rawLink);
-    const rawMoreInfo = (d.raw && (d.raw['DeSmog Profile'] || d.raw['DeSmog Profile'])) || '';
-    const safeMoreInfo = normalizeUrl(rawMoreInfo);
+    // const rawLink = (d.raw && (d.raw['Link'] || d.raw['Link '])) || '';
+    // const safe = normalizeUrl(rawLink);
+    // const rawMoreInfo = (d.raw && (d.raw['DeSmog Profile'] || d.raw['DeSmog Profile'])) || '';
+    // const safeMoreInfo = normalizeUrl(rawMoreInfo);
 
-    let links = [];
-    if (safe) links.push(`<a href="${safe}" target="_blank" rel="noopener">More Info</a>`);
-    if (safeMoreInfo) links.push(`<a href="${safeMoreInfo}" target="_blank" rel="noopener">DeSmog Profile</a>`);
-    const linksHTML = links.length > 0 ? links.join(' | ') : '';
+    // let links = [];
+    // if (safe) links.push(`<a href="${safe}" target="_blank" rel="noopener">More Info</a>`);
+    // if (safeMoreInfo) links.push(`<a href="${safeMoreInfo}" target="_blank" rel="noopener">DeSmog Profile</a>`);
+    // const linksHTML = links.length > 0 ? links.join(' | ') : '';
 
     entityModalTitle.html(`
       <div style="display:flex; align-items:center; gap:8px; font-size:24px; font-weight:700;">
         <span>${d.name}</span>
         ${d.image ? `<img src="${d.image}" style="width:40px; height:40px; object-fit:cover; border-radius:50%;">` : ''}
       </div>
-      ${category ? `<div style="font-size: 16px; font-weight: bold; margin-top: 6px;">${category.replace(/\n/g, '<br>')}</div>` : ''}
+      ${category ? `<div style="font-size: 16px; font-weight: bold; margin-top: 6px;">${processHtmlLinks(category.replace(/\n/g, '<br>'))}</div>` : ''}
       <br>
-      ${desc ? `<div style="font-size: 14px; font-weight: normal; max-height: 350px; overflow-y: auto; margin-top: 6px;">${desc.replace(/\n/g, '<br>')}</div>` : ''}
-      ${linksHTML ? `<div style="margin-top: 8px;">${linksHTML}</div>` : ''}
+      ${desc ? `<div style="font-size: 14px; font-weight: normal; max-height: 350px; overflow-y: auto; margin-top: 6px;">${processHtmlLinks(desc.replace(/\n/g, '<br>'))}</div>` : ''}
+
       <div style="font-size: 14px; font-weight: bold; margin-top: 6px;">
-        <br>
         <br>Connections: 
       </div>
     `);
@@ -1579,7 +1601,7 @@
       const nameSpan = document.createElement('span');
       // Display the text description if available, otherwise fall back to node name
       const textDesc = nodeTextsMap ? nodeTextsMap.get(name) : null;
-      nameSpan.textContent = textDesc || name;
+      nameSpan.innerHTML = processHtmlLinks(textDesc || name);
       nameSpan.style.flex = '1';
       nameSpan.style.cursor = 'pointer';
       nameSpan.addEventListener('click', () => {
@@ -1610,6 +1632,16 @@
         item.appendChild(sourceIcon);
       }
       
+      
+      // Add hover handlers to highlight connection in chart
+      item.addEventListener('mouseenter', () => {
+        hoveredConnection = { source: d.id, target: name };
+        render();
+      });
+      item.addEventListener('mouseleave', () => {
+        hoveredConnection = null;
+        render();
+      });
       frag.appendChild(item);
     });
     
@@ -1764,7 +1796,7 @@
     
     // Text measurements
     ctx.save();
-    const fontSize = Math.max(11, 11 / zoomLevel);
+    const fontSize = 12 / zoomLevel;
     ctx.font = `${fontSize}px Rubik, Arial, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -1837,7 +1869,10 @@
     const format = getLinkFormat(l);
     
     // Check if either end of the link is hovered
-    const isHovered = hoveredNode && (l.source === hoveredNode || l.target === hoveredNode);
+    const isHovered = (hoveredNode && (l.source === hoveredNode || l.target === hoveredNode)) ||
+                      (hoveredConnection && 
+                       ((l.source.id === hoveredConnection.source && l.target.id === hoveredConnection.target) ||
+                        (l.source.id === hoveredConnection.target && l.target.id === hoveredConnection.source)));
     
     // Check if either end is selected
     const isSelected = selectedNode && (l.source === selectedNode || l.target === selectedNode);
@@ -1886,7 +1921,8 @@
     
     // Get formatting for this node (conditional or default)
     const format = getNodeFormat(n);
-    const isHovered = hoveredNode && n === hoveredNode;
+    const isHovered = (hoveredNode && n === hoveredNode) ||
+                      (hoveredConnection && (n.id === hoveredConnection.source || n.id === hoveredConnection.target));
     const isSelected = selectedNode && n === selectedNode;
     
     // Check if this node is connected to the hovered node
@@ -2425,31 +2461,46 @@
     return 'https://' + s.replace(/^[\/]+/, '');
   }
 
+  function processHtmlLinks(html) {
+    if (!html) return html;
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    const links = temp.querySelectorAll('a');
+    links.forEach(link => {
+      if (!link.hasAttribute('target')) {
+        link.setAttribute('target', '_blank');
+      }
+      if (!link.hasAttribute('rel')) {
+        link.setAttribute('rel', 'noopener');
+      }
+    });
+    return temp.innerHTML;
+  }
+
   function populateInfoPanel(d) {
     const desc = (d.raw && (d.raw['Description'] || '')) || '';
     const category = (d.raw && (d.raw['Category'] || '')) || '';
 
-    const rawLink = (d.raw && (d.raw['Link'] || d.raw['Link '])) || '';
-    const safe = normalizeUrl(rawLink);
-    const rawMoreInfo = (d.raw && (d.raw['DeSmog Profile'] || d.raw['DeSmog Profile'])) || '';
-    const safeMoreInfo = normalizeUrl(rawMoreInfo);
+    // const rawLink = (d.raw && (d.raw['Link'] || d.raw['Link '])) || '';
+    // const safe = normalizeUrl(rawLink);
+    // const rawMoreInfo = (d.raw && (d.raw['DeSmog Profile'] || d.raw['DeSmog Profile'])) || '';
+    // const safeMoreInfo = normalizeUrl(rawMoreInfo);
 
-    let links = [];
-    if (safe) links.push(`<a href="${safe}" target="_blank" rel="noopener">More Info</a>`);
-    if (safeMoreInfo) links.push(`<a href="${safeMoreInfo}" target="_blank" rel="noopener">DeSmog Profile</a>`);
-    const linksHTML = links.length > 0 ? links.join(' | ') : '';
+    // let links = [];
+    // if (safe) links.push(`<a href="${safe}" target="_blank" rel="noopener">More Info</a>`);
+    // if (safeMoreInfo) links.push(`<a href="${safeMoreInfo}" target="_blank" rel="noopener">DeSmog Profile</a>`);
+    // const linksHTML = links.length > 0 ? links.join(' | ') : '';
 
     nodeTitleEl.html(`
       <div style="display:flex; align-items:center; gap:8px; font-size:24px; font-weight:700;">
         <span>${d.name}</span>
         ${d.image ? `<img src="${d.image}" style="width:40px; height:40px; object-fit:cover; border-radius:50%;">` : ''}
       </div>
-      ${category ? `<div style="font-size: 16px; font-weight: bold; margin-top: 6px;">${category.replace(/\n/g, '<br>')}</div>` : ''}
+      ${category ? `<div style="font-size: 16px; font-weight: bold; margin-top: 6px;">${processHtmlLinks(category.replace(/\n/g, '<br>'))}</div>` : ''}
       <br>
-      ${desc ? `<div style="font-size: 14px; font-weight: normal; max-height: 350px; overflow-y: auto; margin-top: 6px;">${desc.replace(/\n/g, '<br>')}</div>` : ''}
-      ${linksHTML ? `<div style="margin-top: 8px;">${linksHTML}</div>` : ''}
+      ${desc ? `<div style="font-size: 14px; font-weight: normal; max-height: 350px; overflow-y: auto; margin-top: 6px;">${processHtmlLinks(desc.replace(/\n/g, '<br>'))}</div>` : ''}
+  
       <div style="font-size: 14px; font-weight: bold; margin-top: 6px;">
-        <br>
         <br>Connections: 
       </div>
     `);
@@ -2477,7 +2528,7 @@
       const nameSpan = document.createElement('span');
       // Display the text description if available, otherwise fall back to node name
       const textDesc = nodeTextsMap ? nodeTextsMap.get(name) : null;
-      nameSpan.textContent = textDesc || name;
+      nameSpan.innerHTML = processHtmlLinks(textDesc || name);
       nameSpan.style.flex = '1';
       nameSpan.style.cursor = 'pointer';
       nameSpan.addEventListener('click', () => {
@@ -2509,13 +2560,23 @@
         item.appendChild(sourceIcon);
       }
       
+      
+      // Add hover handlers to highlight connection in chart
+      item.addEventListener('mouseenter', () => {
+        hoveredConnection = { source: d.id, target: name };
+        render();
+      });
+      item.addEventListener('mouseleave', () => {
+        hoveredConnection = null;
+        render();
+      });
       frag.appendChild(item);
     });
     connectionsBox.appendChild(frag);
   }
 
   function clearInfoPanel() {
-    nodeTitleEl.html('Select a node or start story');
+    nodeTitleEl.html('Click/hover on map or start story');
     nodeMetaEl.text('');
     nodeLinkEl.html('');
     connectionsBox.innerHTML = '';
