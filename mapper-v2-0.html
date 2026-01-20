@@ -846,6 +846,13 @@
    * CANVAS SETUP
    ************************************************************************/
   function resizeCanvas() {
+    // Clear inline styles to let CSS percentage sizing work
+    canvas.style.width = '';
+    canvas.style.height = '';
+    
+    // Force reflow to get actual available space
+    void canvas.offsetHeight;
+    
     const rect = canvas.getBoundingClientRect();
     const hiResScale = devicePixelRatio * 1.5;
     canvas.width  = Math.max(600, Math.floor(rect.width  * hiResScale));
