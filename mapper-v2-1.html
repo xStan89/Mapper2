@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Gwyn Morgan Network</title>
+  <title>AB Seperatism Network</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
@@ -117,12 +117,12 @@
       justify-content: center;
       align-items: center;
       padding: 4px;
-      border: none;
+      border: 1px solid var(--near-black);
       top: 12px;
       right: 12px;
       height: 20px;
       width: 20px;
-      background: var(--main-yellow);
+      background: var(--white);
       border-radius: 20px;
       cursor: pointer;
       font-size: 13px;
@@ -189,13 +189,14 @@
       border-radius: 20px;
       border: none;
       cursor: pointer;
-      background: var(--main-yellow);
+      background: var(--white);
       color: var(--text-black);
       font-size: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-family);
+      border: 1px solid var(--near-black);
     }
     
     .zoom-btn:hover {
@@ -208,13 +209,14 @@
       border-radius: 20px;
       border: none;
       cursor: pointer;
-      background: var(--main-yellow);
+      background: var(--white);
       color: var(--text-black);
       font-size: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-family);
+      border: 1px solid var(--near-black);
     }
     
     #fullscreen-btn:hover {
@@ -547,11 +549,6 @@
 
     .story-nav-btn {
       padding: 6px 8px;
-      /* align-items: bottom;
-      padding-top: 6px;
-      padding-top: 12px;
-      padding-left: 6px;
-      padding-right: 6px; */
       border-radius: 4px;
       border: none;
       cursor: pointer;
@@ -773,7 +770,7 @@
           <button id="zoom-in" class="zoom-btn" title="Zoom In">+</button>
           <button id="zoom-out" class="zoom-btn" title="Zoom Out">–</button>
           <button id="zoom-reset" class="zoom-btn" title="Reset Zoom">⛶</button>
-          <button id="fullscreen-btn" title="Toggle Fullscreen">⌞⌝</button>
+          <button id="fullscreen-btn" title="Toggle Fullscreen">⌜⌟</button>
         </div>
       </div>
 
@@ -3211,10 +3208,10 @@
 
   function updateFullscreenButton() {
     if (document.fullscreenElement) {
-      fullscreenBtn.innerHTML = '⌞⌝'; // Exit fullscreen icon
+      fullscreenBtn.innerHTML = '◱'; // Exit fullscreen icon
       fullscreenBtn.title = 'Exit Fullscreen';
     } else {
-      fullscreenBtn.innerHTML = '⌞⌝'; // Enter fullscreen icon
+      fullscreenBtn.innerHTML = '⌜⌟'; // Enter fullscreen icon
       fullscreenBtn.title = 'Enter Fullscreen';
     }
     
