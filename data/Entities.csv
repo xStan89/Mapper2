@@ -1,50 +1,58 @@
-Entity Name,Description,Category,Views,View Highlight,Area,Sub Area,Image,Link,DeSmog Profile,Show,Fixed,X,Y,More Info
-Adam Waterous,, Wealthy Individual,"1,11,13","11,13",,,https://i.ibb.co/xqWkP6dT/RICH-waterous.png,,,TRUE,TRUE,914,485.2,
-Andrew Coyne,, Wealthy Individual,"1,5,8",5,,,https://i.ibb.co/WNXDFmD6/RICH-Coyne.png,,https://www.desmog.com/andrew-coyne/,TRUE,TRUE,439,635.2,
-Atlas Network,,   Institute,"1,2,3,4,5,13","2,3,4,5,13",,,https://i.ibb.co/WNtbbbM5/INS-Atlas.png,https://www.desmog.com/atlas-economic-research-foundation/,https://www.desmog.com/atlas-economic-research-foundation/,TRUE,TRUE,489,835.2,
-Aurea Foundation,,  Foundation,"1,5",5,,,https://i.ibb.co/1fjJPzGz/FOU-Aurea.png,,https://www.desmog.com/aurea-foundation/,TRUE,TRUE,464,660.2,
-Birchcliff Energy,,Industry,"1,11,13,16","13,16",,,https://i.ibb.co/VYGj2HLC/Oil-Birchcliff.png,,,TRUE,TRUE,714,210.2,
-Brian Felesky,, Wealthy Individual,"1,16",16,,,https://i.ibb.co/gMC7FGxJ/Felesky.jpg,,,TRUE,TRUE,589,485.2,
-Canada Action,,        Industry Front Group,"1,17",17,,,https://i.ibb.co/v4HsbPyR/CAN-ACTION.jpg,,https://www.desmog.com/canada-action/,TRUE,TRUE,289,835.2,
-Canada Proud,"One of two ""Proud"" groups that are similar and connected, but also distinct. <b><a href=""https://www.desmog.com/canada-strong-and-free-network/"">Canada Proud</a></b> is run by Jeff Ballingall, a former Conservative party staffer, who founded Ontario Proud in 2018. 
-Groups: Canada Proud, Ontario Proud, B.C. Proud",     Campaign Org,"1,6,7,12","6,7",,,https://i.ibb.co/8nBrZn77/FRO-Canada-Proud.png,https://www.desmog.com/canada-proud,,TRUE,TRUE,814,835.2,
+Entity Name,Description,Category,Views,View Highlight,Area,Sub Area,Image,Link,DeSmog Profile,Show,Fixed,X,Y
+Adam Waterous,An investment banker who is the CEO of Waterous Energy Fund and founder of Strathcona Resources.,Wealthy Individual,"1,8",8,,,https://i.ibb.co/xqWkP6dT/RICH-waterous.png,,,true,true,1077.40,385.20
+Atlas Network,"The <a href=""https://www.desmog.com/atlas-economic-research-foundation/"">Atlas Network</a> is an international organization of right-wing think tanks that advocate against any regulations that would impact their donor corporations, including climate and environmental regulations.
+
+Prominent Atlas groups include the <a href=""https://www.desmog.com/fraser-institute/"">Fraser Institute</a>, <a href=""https://www.desmog.com/2025/05/23/institute-of-economic-affairs-under-investigation-charity-commission/"">Institute of Economic Affairs</a>, <a href=""https://www.desmog.com/heritage-foundation/"">Heritage Foundation</a>, <a href=""https://www.desmog.com/heartland-institute/"">Heartland Institute</a> and <a href=""https://www.desmog.com/american-legislative-exchange-council/"">ALEC</a>.",Institute,"1,2,5",2,,,https://i.ibb.co/bRrhp8GL/Atlas-Network.png,https://www.desmog.com/atlas-economic-research-foundation/,https://www.desmog.com/atlas-economic-research-foundation/,true,true,327.40,785.20
+Birchcliff Energy,,Industry,"1,8",,,,https://i.ibb.co/HfjHFmVR/Oil-Birchcliff.png,,,true,true,952.40,210.20
 Canada Strong and Free Network,"The <b><a href=""https://www.desmog.com/canada-strong-and-free-network/"">Canada Strong and Free Network</a></b> (formerly known as the Manning Centre), is a large right-wing Canadian think tank founded in 2005. It serves as a major funding hub and think tank for conservative outrage politics in Canada. 
 
-Gwyn Morgan's foundation has been a large financial backer of Canada Strong and Free.",   Institute,"1,6,7,13,16","6,7,13,16",,,https://i.ibb.co/5gwQMPHm/INS-CSF.png,https://www.desmog.com/canada-strong-and-free-network/,,TRUE,TRUE,664,835.2,
-Canada Strong and Proud,"One of two ""Proud"" groups that are similar and connected, but also distinct. <b><a href=""https://www.elections.ca/fin/oth/thi/advert/tp45/TP-0022_due7.pdf"">Canada Strong and Proud</a></b> operates as the legally registered third party advertisor for the overall ""Proud"" network.
-Groups: Canada Strong and Proud, Alberta Proud, Quebec Fier, Quebec Proud, Fierement Noubeau-Brunswick, Proudly New Brunswick, Nova Scotia Proud, Newfoundland Strong, West Coast Proud, Manitoba Proud, Saskatchewan Proud, Ontario Strong",     Campaign Org,"1,6,7,13,16","7,13,16",,,https://i.ibb.co/b5HwHwtB/FRO-Strong-and-Proud.png,,,TRUE,TRUE,764,760.2,
-CAPP,,Industry,"1,13,16","13,16",,,https://i.ibb.co/65VpMCF/Oil-CAPP.png,,,TRUE,TRUE,639,360.2,
-Canadian Constititution Foundation,,   Institute,"1,2,5",,,,https://i.ibb.co/VkJmWCm/INS-CCF.png,,https://www.desmog.com/canadian-constitution-foundation/,TRUE,TRUE,539,860.2,
-Canadian Energy Centre,,Industry,1,,,,https://i.ibb.co/PsVctMm3/CEC.png,,https://www.desmog.com/canadian-energy-centre-cec/,FALSE,FALSE,,,
-Canadian Natural Resources,,Industry,"1,13,14,13,16,17","13,14,16,17",,,https://i.ibb.co/Y4ms79fF/Oil-CNR.png,,,TRUE,TRUE,339,210.2,
-Cenovus,,Industry,"1,13,14,13,16,17","13,14,16,17",,,https://i.ibb.co/1tZ69gX5/Oil-Cenovus.png,,,TRUE,TRUE,264,210.2,
-Charles Koch,, Wealthy Individual,"1,4",4,,,"
-https://i.ibb.co/3mMnhfwM/Koch.jpg",,,TRUE,TRUE,214,485.2,
-Fraser Institute,,   Institute,"1,2,3,4,5,13","3,4,11",,,https://i.ibb.co/JRSJSftV/INS-Fraser.png,https://www.desmog.com/fraser-institute/,https://www.desmog.com/fraser-institute/,TRUE,TRUE,439,810.2,
-Friends of Free Enterprise In Canada,,     Campaign Org,"1,11,13","11,13",,,https://i.ibb.co/mVSNPHtv/FRO-Friends-of.png,,,TRUE,TRUE,1139,835.2,
-Frontier Centre for Public Policy,,   Institute,"1,2,5",,,,https://i.ibb.co/XrBcBnNh/INS-Frontier.png,,https://www.desmog.com/frontier-centre-public-policy/,TRUE,TRUE,539,810.2,
-Gwyn Morgan,"<b><a href=""https://www.desmog.com/gwyn-morgan/"">Gwyn Morgan</a></b> is a former CEO of Canadian natural resource companies using his money and connections in the energy industry and media to advance a pro-fossil fuels, right-wing agenda.", Wealthy Individual,"1,2,3,5,6,8,9,10,11","1,2,3,5,6,8,9,10,11",,,https://i.ibb.co/LzbppFw9/Gwyn.png,https://www.desmog.com/gwyn-morgan/,https://www.desmog.com/gwyn-morgan/,TRUE,TRUE,714,485.2,
-Gwyn Morgan and Patricia Trottier Foundation,,  Foundation,"1,2,6,8,10","2,6,8,10",,,https://i.ibb.co/Lh5LyYwL/FOU-Gwyn-Patricia.png,https://www.desmog.com/gwyn-morgan-and-patricia-trottier-foundation/,https://www.desmog.com/gwyn-morgan/,TRUE,TRUE,739,510.2,
-Imperial Oil,,Industry,"1,13,14,16","13,14,16",,,https://i.ibb.co/jvfdFDv0/Oil-Imperial.png,,,TRUE,TRUE,189,210.2,
-Indian Resource Council,,        Industry Front Group,"1,17",17,,,https://i.ibb.co/GgW982C/irc.jpg,,https://www.desmog.com/indian-resource-council/,TRUE,TRUE,339,835.2,
-Indigenous Resource Network,,        Industry Front Group,"1,17",17,,,https://i.ibb.co/k6xC6h9R/indres.png,,,TRUE,TRUE,314,810.2,
-Montreal Economic Institute,,   Institute,"1,2,5",,,,https://i.ibb.co/rf7H7VLS/INS-MEI.png,,https://www.desmog.com/montreal-economic-institute/,TRUE,TRUE,464,785.2,
-Institute for Liberal Studies,,   Institute,"1,2",,,,https://i.ibb.co/Cs4QWXpm/INS-Liberal-Studies.png,,,TRUE,TRUE,514,885.2,
-Jeff Ballingall,,      Politics,"1,6,12","6,12",,,https://i.ibb.co/YF83hQpp/POL-Jeff-B.png,,,TRUE,TRUE,839,810.2,
-Jeff Tonken,, Wealthy Individual,"1,11,13","11,13",,,https://i.ibb.co/YFXynS7H/RICH-tonken.png,,,TRUE,TRUE,1064,485.2,
-True North/Juno News,,    Media,"1,8,10","8,10",,,https://i.ibb.co/Z6QZWTNT/MED-True-North.png,,,TRUE,TRUE,1064,835.2,
-Justice Centre for Constitutional Freedom,,   Institute,"1,2",,,,https://i.ibb.co/r2pqcQ3k/INS-Justice-Centre.png,,,TRUE,TRUE,464,885.2,
-Macdonald Laurier Institute,,   Institute,"1,5,13",13,,,https://i.ibb.co/QF8Bw0Xg/INS-MLI.png,,https://www.desmog.com/macdonald-laurier-institute/,TRUE,TRUE,439,860.2,
-Mattamy Homes,,Industry,"1,11,12",12,,,https://i.ibb.co/xKNZDsPV/OIL-Mattamy.png,,,TRUE,TRUE,914,210.2,
-Michael Binnion,Binnion also donated to Maxime Bernier and former Alberta premier Jason Kenney., Wealthy Individual,"1,13,16","13,16",,,https://i.ibb.co/qLDpKXrT/binnion.png,,,TRUE,TRUE,489,485.2,
-Michael Rose,, Wealthy Individual,"1,11,13",11,,,https://i.ibb.co/svW6Sphn/rose.png,,,TRUE,TRUE,989,485.2,
-National Post,,    Media,"1,5,8,9","5,8",,,https://i.ibb.co/Nd9RMkyr/MED-Nat-Post.png,,,TRUE,TRUE,989,835.2,
-Ovintiv,,Industry,"1,1,16",16,,,https://i.ibb.co/VcwX2Dym/Oil-Ovintiv.png,,,TRUE,TRUE,789,210.2,
-Pathways Alliance,,Industry,"1,13,14","13,14",,,https://i.ibb.co/mL73pnp/Oil-Pathways.png,,,TRUE,TRUE,189,360.2,
-Peter Gilgan,, Wealthy Individual,"1,11,12","11,12",,,https://i.ibb.co/0pgkb0MM/RICH-gilgan.png,,,TRUE,TRUE,1139,485.2,
-Pierre Poilievre,,      Politics,"1,11",11,,,https://i.ibb.co/ZRZSGLYN/POL-Pierre-P.png,,,TRUE,TRUE,714,1110.2,
-Questerre Energy,,Industry,"1,13,16","13,16",,,https://i.ibb.co/84cqdw7m/Oil-Questerre.png,,,TRUE,TRUE,489,210.2,
-Second Street,,   Institute,"1,2",,,,https://i.ibb.co/RpmQKGdN/INS-2ST.png,,https://www.desmog.com/secondstreet-org/,TRUE,TRUE,514,785.2,
-Suncor,,Industry,"1,13,14,16","13,14,16",,,https://i.ibb.co/g0CLvkD/Oil-Suncor.png,,,TRUE,TRUE,414,210.2,
-Tourmaline Oil,,Industry,"1,13,11,16","13,16",,,https://i.ibb.co/rRk48GLM/Oil-Tourmaline.png,,,TRUE,TRUE,639,210.2,
-Waterous Energy,,Industry,"1,11,13",13,,,https://i.ibb.co/yz8fqFW/Oil-Waterous.png,,,TRUE,TRUE,564,210.2,
+Gwyn Morgan's foundation has been a large financial backer of Canada Strong and Free.",Institute,"1,4,5,6","5,6",,,https://i.ibb.co/gbsYyknw/Canada-Strong-and-Free.png,https://www.desmog.com/canada-strong-and-free-network/,,true,true,652.40,785.20
+Canada Strong and Proud,"One of two ""Proud"" groups that are similar and connected, but also distinct. Canada Strong and Proud operates as the legally registered third party advertisor for the overall ""Proud"" network.
+
+Groups: Canada Strong and Proud, Alberta Proud, Quebec Fier, Quebec Proud, Fierement Noubeau-Brunswick, Proudly New Brunswick, Nova Scotia Proud, Newfoundland Strong, West Coast Proud, Manitoba Proud, Saskatchewan Proud, Ontario Strong",Campaign Org/Politics,"1,6",6,,,https://i.ibb.co/Xr9RGmZn/Canada-Strong-and-Proud.png,,,true,true,802.40,985.20
+Canadian Constititution Foundation,"The <a href=""https://www.desmog.com/canadian-constitution-foundation/"">Canadian Constitution Foundation</a> is an Atlas Network group dedicated to litigating right-wing issues. Many of its employees are associated with the <a href=""https://en.wikipedia.org/wiki/Canadian_Taxpayers_Federation"">Canadian Taxpayers Foundation</a>.",Institute,"1,2",2,,,https://i.ibb.co/Z6fyPwNx/Can-Constitution-Found.png,,https://www.desmog.com/canadian-constitution-foundation/,true,true,352.40,835.20
+CAPP,"The <a href=""https://www.desmog.com/canadian-association-petroleum-producers-capp/"">Canadian Association of Petroleum Producers (CAPP)</a> is a powerful industry organization made up of the largest oil and gas companies in Canada. The organization lobbies the government advocating for its members interests.",Industry,"1,5",,,,https://i.ibb.co/ksM15qfM/Oil-CAPP.png,,,true,true,552.40,360.20
+Cenovus,"<a href=""https://www.desmog.com/2025/01/30/cenovus-funded-grassroots-groups-that-oppose-climate-laws-document-reveals/"">Cenovus</a> is a large Canadian oil company operating in the oil sands. ",Industry,"1,5",,,,https://i.ibb.co/kgh4pjsL/Cenovus.png,,,true,true,327.40,210.20
+Charles Koch,"Charles Koch is a long time donor to right-wing and pro-industry causes in the United States. 
+
+He and his brother set up the <a href=""https://en.wikipedia.org/wiki/Koch_network"">""Koch network""</a> in the 2000s, an infamous organization of rich individuals, corporations and right wing think tanks working to funnel money to Republican politicians and advance right-wing causes. More than twenty-five years later, the Koch Network <a href=""https://www.desmog.com/2025/12/11/the-koch-network-is-pushing-trump-to-accelerate-ai-documents-show/"">continues to use its money to advance big-business interests</a>.",Wealthy Individual,"1,3,5",,,,"
+https://i.ibb.co/3mMnhfwM/Koch.jpg",,,true,true,152.40,535.20
+Fraser Institute,"The <a href=""https://www.desmog.com/fraser-institute/"">Fraser Institute</a> was the original Atlas Network organization, set up in 1974 by <a href=""https://en.wikipedia.org/wiki/Antony_Fisher"">Antony Fisher</a>. 
+
+Since its inception, Fraser has operated as a mouthpiece for the Canadian fossil fuels industry, advocating for its interests while being funded by the oil industry's largest companies.",Institute,"1,2,3","2,3",,,https://i.ibb.co/cXgfvDQr/Fraser.png,https://www.desmog.com/fraser-institute/,https://www.desmog.com/fraser-institute/,true,true,277.40,760.20
+Friends of Free Enterprise In Canada,"During the 2025 Canadian election, thirty-two Canadian business leaders, including Gwyn Morgan, endorsed Pierre Poilievre and the Conservative Party of Canada in paid-advertising placed in traditional Canadian media.",Campaign Org/Politics,"1,8",8,,,https://i.ibb.co/Pv9CXsRK/FFEC.png,,,true,true,1002.40,585.20
+Frontier Centre for Public Policy,"The <a href=""https://www.desmog.com/frontier-centre-public-policy/"">Frontier Centre for Public Policy</a> is the most extreme Canadian member of the Atlas Network. ",Institute,"1,2",2,,,https://i.ibb.co/j9KF3yV4/Frontier-Centre.png,,https://www.desmog.com/frontier-centre-public-policy/,true,true,377.40,760.20
+Globe and Mail,Legacy Canadian centre-right newspaper.,Media,"1,7",7,,,https://i.ibb.co/q37hN6mw/MED-GM.png,,,true,true,1027.40,710.20
+Gwyn Morgan,"<a href=""https://www.desmog.com/gwyn-morgan/"">Gwyn Morgan</a> is a former CEO of Canadian natural resource companies using his money and connections in the energy industry and media to advance a pro-fossil fuels, right-wing agenda.",Wealthy Individual,"1,2,3,4,5,6,7,8","1,2,3,4,5,7,8",,,https://i.ibb.co/LzbppFw9/Gwyn.png,https://www.desmog.com/gwyn-morgan/,https://www.desmog.com/gwyn-morgan/,true,true,652.40,535.20
+Imperial Oil,"Imperial Oil is one of Canada's oldest, largest oil companies, majority owned by ExxonMobil.",Industry,"1,3,5",,,,https://i.ibb.co/2zLyYMR/Imp.png,,,true,true,202.40,210.20
+Institute for Liberal Studies,"The <a href=""https://www.desmog.com/frontier-centre-public-policy/"">Frontier Centre for Public Policy</a> is a Canadian Atlas Network member who claims ""there is the widely known fact that there has been no statistically significant warming of the planet"".
+
+They have also <a href=""https://www.cbc.ca/news/indigenous/saskatchewan-radio-ad-residential-schools-myths-1.4836348"">denied the facts surrounding Canadian residential schools</a>.",Institute,"1,2",2,,,https://i.ibb.co/0jbHgWzF/Liberal-Studies.jpg,,,true,true,302.40,835.20
+Jeff Ballingall/Canada Proud,"One of two ""Proud"" groups that are similar and connected, but also distinct. <a href=""https://www.desmog.com/canada-strong-and-free-network/"">Canada Proud</a> is run by Jeff Ballingall, a former Conservative party staffer, who founded Ontario Proud in 2018. 
+Groups: Canada Proud, Ontario Proud, B.C. Proud",Campaign Org/Politics,"1,6",,,,https://i.ibb.co/JF5bnXKj/Canada-Proud.png,https://www.desmog.com/canada-proud,,true,true,502.40,985.20
+Jeff Tonken,"Former CEO and current board member of Birchcliff Energy, a Canadian fossil fuels company.",Wealthy Individual,"1,8",8,,,https://i.ibb.co/YFXynS7H/RICH-tonken.png,,,true,true,1002.40,385.20
+Justice Centre for Constitutional Freedom,"The <a href=""https://en.wikipedia.org/wiki/Justice_Centre_for_Constitutional_Freedoms"">Justice Centre for Constitutional Freedoms</a> is a Canadian Atlas Network group that focused on litigating for right-wing causes. They have represented <a href=""https://en.wikipedia.org/wiki/Rebel_News"">Rebel News</a> and Freedom Convoy members. 
+
+Its founder once worked for the <a href=""https://en.wikipedia.org/wiki/Canadian_Taxpayers_Federation"">Canadian Taxpayers Association</a>, and was disbarred by the law societies of Manitoba and Alberta for illegally surveilling the Manitoba chief justice in 2021.",Institute,"1,2",2,,,https://i.ibb.co/3yvxwrXb/Justice-Centre.png,,,true,true,277.40,810.20
+Macdonald-Laurier Institute,"The <a href=""https://www.desmog.com/macdonald-laurier-institute/"">Macdonald-Laurier Institute</a> is an Atlas Network think tank based in Ottawa. 
+
+MLI advocates for the oil and gas industry to involve Indigenous groups as ""a shield against opponents that is hard to undermine"".",Institute,1,,,,https://i.ibb.co/HDXdyc6c/MLI.png,,https://www.desmog.com/macdonald-laurier-institute/,true,true,302.40,735.20
+Michael Binnion/Modern Miracle Network,"The <a href=""https://www.desmog.com/modern-miracle-network/"">Modern Miracle Network</a> is a Canadian pro-fossil fuels advocacy group founded by Michael Binnion, the president of Questerre Energy.
+
+Binnion is a member of the <a href=""https://www.desmog.com/canada-strong-and-free-network/"">Canada Strong and Free Network</a> and has donated to Maxime Bernier and former Alberta premier Jason Kenney.",Wealthy Individual,"1,6",6,,,https://i.ibb.co/qLDpKXrT/binnion.png,,,true,true,802.40,435.20
+Michael Rose,"CEO of Tourmaline Oil, a Canadian fossil fuels company.",Wealthy Individual,"1,8",8,,,https://i.ibb.co/svW6Sphn/rose.png,,,true,true,927.40,385.20
+Montreal Economic Institute,"The <a href=""https://www.desmog.com/montreal-economic-institute/"">Montreal Economic Institute</a> is a Canadian Atlas Network member that has been called a <a href=""http://archive.today/2023.02.03-230052/https://financialpost.com/news/economy/montreal-economic-institute-continues-moves-from-the-fringe-by-appointing-joe-oliver"">“kind of Fraser Institute in Quebec”</a> by the Financial Post.
+
+Maxime Bernier was a vice president of MEI until 2006.",Institute,"1,2",2,,,https://i.ibb.co/B5XDsTJ3/Montreal-Economic-Institute.png,,https://www.desmog.com/montreal-economic-institute/,true,true,352.40,735.20
+National Post,"Large Canadian newspaper owned by Postmedia, founded by Conrad Black in 1998. Generally supportive of big-business and skeptical of climate issues.",Media,"1,7",7,,,https://i.ibb.co/KxZqGNHL/Nat-Post.png,,,true,true,977.40,760.20
+Ovintiv,"Founded by Gwyn Morgan, Encana was the largest fossil fuels company in Canada before it moved its operations to the U.S. and changed its name to Ovintiv.
+
+Morgan placed the blame for Encana's demise with the Liberal government, claiming they created a climate hostile to oil and gas investment.",Industry,"1,3",,,,https://i.ibb.co/YBcYQMxX/Oil-Ovintiv.png,,,true,true,827.40,210.20
+Pathways Alliance,"<a href=""https://www.desmog.com/pathways-alliance/"">Pathways Alliance</a> is an organization made up of Canada's largest oil sands producers. They advance carbon capture technology as a solution to its members' CO2 emissions.",Industry,"1,5",,,,https://i.ibb.co/h1CQ5HJr/Pathways.jpg,,,true,true,427.40,360.20
+Pierre Poilievre,Leader of the Conservative Party of Canada and leader of the official opposition.,Politics,"1,8",8,,,https://i.ibb.co/HfqS5TTy/Pierre.png,,,true,true,652.40,1110.20
+Questerre Energy,Canadian oil company run by Michael Binnion.,Industry,"1,6",,,,https://i.ibb.co/RTYPcCg0/Oil-Questerre.png,,,true,true,577.40,210.20
+Second Street,"<a href=""https://www.desmog.com/secondstreet-org/"">Second Street</a> is a Canadian Atlas Network member group. Like many other Canadian Atlas groups, Second Street's members have close connections to the <a href=""https://en.wikipedia.org/wiki/Canadian_Taxpayers_Federation"">Canadian Taxpayers Federation</a>.",Institute,"1,2",2,,,https://i.ibb.co/BHp8dYvZ/Second-Street.png,,https://www.desmog.com/secondstreet-org/,true,true,377.40,810.20
+Suncor,Large Canadian fossil fuels company operating in the oil sands.,Industry,"1,5",,,,https://i.ibb.co/MyFDxPWn/Suncor.png,,,true,true,452.40,210.20
+Tourmaline Oil,Canadian oil and gas company.,Industry,"1,5,8",,,,https://i.ibb.co/bg5hC7Qc/Oil-Tourmaline.png,,,true,true,702.40,210.20
+True North/Juno News,"<a href=""https://www.desmog.com/2024/10/28/fracking-pioneer-gwyn-morgan-gave-530k-to-anti-climate-website-true-north/"">True North/Juno News</a> is a far-right Canadian news organization that has been registered as a charity. Their coverage has an <a href=""https://www.junonews.com/p/exclusive-feds-support-immigration"">anti-immigration</a>, <a href=""https://x.com/davidpugliese/status/1811163522220634431"">extreme-far-right bent</a>.",Media,"1,4",4,,,https://i.ibb.co/tT6rGRqX/MED-True-North.png,,,true,true,927.40,810.20
+Waterous Energy,Canadian fossil fuels investment fund.,Industry,"1,8",,,,https://i.ibb.co/PGBqFzTG/Oil-Waterous.png,,,true,true,1077.40,210.20
