@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Network Map</title>
+  <title>Map Viewer</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
@@ -59,40 +59,43 @@
       top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      max-width: 700px;
+      max-width: 96%;
+      max-height: 30vh;
+      overflow-y: auto;
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 4px 6px;
       justify-content: center;
       align-items: center;
-      padding: 8px 12px;
+      padding: 5px 10px;
       background: rgba(255, 255, 255, 0.95);
       border: 0px solid var(--panel-grey);
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       z-index: 100;
       transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-      overflow: hidden;
     }
 
     #legend-container.collapsed {
       max-height: 0;
       padding: 0 12px;
       opacity: 0;
+      overflow: hidden;
       pointer-events: none;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
+      gap: 3px;
+      padding: 2px 5px;
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.2s;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       user-select: none;
+      line-height: 1.2;
     }
 
     .legend-item:hover {
@@ -105,10 +108,51 @@
     }
 
     .legend-color-box {
-      width: 10px;
-      height: 10px;
-      border-radius: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 8px;
       border: 1px solid rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    /* Shape Legend Container */
+    #shape-legend-container {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 96%;
+      max-height: 30vh;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+      justify-content: center;
+      align-items: center;
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 0px solid var(--panel-grey);
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    .shape-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      user-select: none;
+      line-height: 1.2;
+    }
+
+    .shape-legend-icon {
+      font-size: 10px;
+      flex-shrink: 0;
+      line-height: 1;
     }
 
     #legend-toggle {
@@ -756,6 +800,9 @@
         <img src="https://i.ibb.co/60z33Lp3/scroller-11.png" alt="Logo">
       </div>
       
+      <!-- Shape Legend Container -->
+      <div id="shape-legend-container" style="display: none;"></div>
+      
       <!-- Legend Container -->
       <div id="legend-container" style="display: none;"></div>
       
@@ -805,7 +852,7 @@
 
 
       <div id="node-info">
-        <div id="node-title">Click/hover on map, search for a person/group or click Start Story</div>
+        <div id="node-title">Click/hover on map or search for a person/group</div>
       </div>
 
       <div id="node-links"></div>
@@ -856,7 +903,7 @@
     zoomMax: 5.0,
     zoomStep: 0.2,
     // DATA FOLDER
-    dataFolder: 'https://xstan89.github.io/Mapper2/data/'
+    dataFolder: 'data/'
   };
 
   const PADDING = 80;
@@ -878,8 +925,12 @@
     customNodeSize: 30,
     minNodeSize: 10,
     maxNodeSize: 100,
-    sizeScale: 1.0
+    sizeScale: 1.0,
+    csvSizeScale: 1.0,
+    defaultShape: 'circle'
   };
+
+  let hasSizeColumn = false; // Whether Entities.csv has a 'Size' column
 
   // Global state
   let nodes = [];
@@ -920,6 +971,15 @@
   let categoryColorMap = new Map();
   let activeCategories = new Set(); // Tracks which categories are currently visible
 
+  // Shape Legend Settings
+  let shapeLegendEnabled = false;
+  let shapeLegendItems = {
+    circle:   { enabled: false, label: '' },
+    square:   { enabled: false, label: '' },
+    triangle: { enabled: false, label: '' },
+    diamond:  { enabled: false, label: '' }
+  };
+
   // STORY MODE STATE
   let viewsData = [];
   let viewsById = new Map();
@@ -956,6 +1016,7 @@
   const legendContainer = document.getElementById('legend-container');
   const legendToggle = document.getElementById('legend-toggle');
   const legendToggleIcon = document.getElementById('legend-toggle-icon');
+  const shapeLegendContainer = document.getElementById('shape-legend-container');
 
   // Story mode elements
   const storyBtn = document.getElementById('story-btn');
@@ -1043,21 +1104,28 @@
 
   // Get the height of legend for padding calculations
   function getLegendPadding() {
-    if (legendContainer.style.display === 'none') return 0;
+    let padding = 0;
+    
+    // Account for shape legend
+    if (shapeLegendEnabled && shapeLegendContainer && shapeLegendContainer.style.display !== 'none') {
+      padding += shapeLegendContainer.offsetHeight + 10;
+    }
+    
+    if (legendContainer.style.display === 'none') return padding > 0 ? padding + 10 : 0;
+    
+    // Position color legend below shape legend
+    const shapeLegendHeight = (shapeLegendEnabled && shapeLegendContainer && shapeLegendContainer.style.display !== 'none') ? shapeLegendContainer.offsetHeight + 10 : 0;
+    legendContainer.style.top = (10 + shapeLegendHeight) + 'px';
     
     // On mobile with collapsed legend, only account for toggle button
     if (isMobileView() && isLegendCollapsed) {
-      return 40; // Toggle button height + some margin
+      padding += 40; // Toggle button height + some margin
+      return padding;
     }
     
     // Otherwise account for full legend height
-    if (isMobileView()) {
-      // Mobile expanded: legend height
-      return legendContainer.offsetHeight + 20;
-    } else {
-      // Desktop: always expanded
-      return legendContainer.offsetHeight + 20;
-    }
+    padding += legendContainer.offsetHeight + 10;
+    return padding > 0 ? padding + 10 : 0;
   }
 
   /************************************************************************
@@ -1128,7 +1196,10 @@
     nodes.forEach(n => {
       const conns = (adjacency.get(n.id) || new Set()).size;
       
-      if (formattingSettings.nodeSizeMode === 'custom') {
+      if (formattingSettings.nodeSizeMode === 'csv' && hasSizeColumn) {
+        // Size nodes based on the 'Size' column in Entities.csv
+        // (values computed below after this forEach)
+      } else if (formattingSettings.nodeSizeMode === 'custom') {
         n.baseR = formattingSettings.customNodeSize;
       } else {
         const normalized = maxConnections > minConnections 
@@ -1140,18 +1211,62 @@
       n.r = n.baseR;
     });
     
+    // Handle csv size mode separately to compute min/max across all nodes
+    if (formattingSettings.nodeSizeMode === 'csv' && hasSizeColumn) {
+      const CSV_MIN = 10;
+      const CSV_MAX = 100;
+      const scale = formattingSettings.csvSizeScale;
+      const minSize = formattingSettings.minNodeSize;
+      const maxSize = formattingSettings.maxNodeSize;
+      
+      // Parse size value, stripping commas/spaces from formatted numbers
+      const parseSizeVal = (raw) => {
+        if (raw == null) return NaN;
+        return parseFloat(String(raw).replace(/[, ]/g, ''));
+      };
+      
+      const sizeValues = [];
+      nodes.forEach(n => {
+        const val = parseSizeVal(n.raw && n.raw['Size']);
+        if (!isNaN(val)) sizeValues.push(val);
+      });
+      
+      const dataMin = sizeValues.length > 0 ? Math.min(...sizeValues) : 0;
+      const dataMax = sizeValues.length > 0 ? Math.max(...sizeValues) : 1;
+      const dataRange = dataMax - dataMin;
+      
+      nodes.forEach(n => {
+        const val = parseSizeVal(n.raw && n.raw['Size']);
+        let size;
+        if (!isNaN(val) && dataRange > 0) {
+          const normalized = (val - dataMin) / dataRange;
+          size = (CSV_MIN + normalized * (CSV_MAX - CSV_MIN)) * scale;
+        } else if (!isNaN(val)) {
+          size = ((CSV_MIN + CSV_MAX) / 2) * scale;
+        } else {
+          size = CSV_MIN * scale;
+        }
+        n.baseR = Math.max(minSize, Math.min(size, maxSize));
+        n.r = n.baseR;
+      });
+    }
+    
     applyNodeSizeScale();
   }
   
   function applyNodeSizeScale() {
     const scale = formattingSettings.sizeScale;
+    const isCsvMode = formattingSettings.nodeSizeMode === 'csv' && hasSizeColumn;
     nodes.forEach(n => {
-      const format = getNodeFormat(n);
-      if (format?.sizeEnabled && format?.nodeSize) {
-        n.r = (format.nodeSize * scale);
-      } else {
-        n.r = (n.baseR || 15) * scale;
+      // In CSV size mode, CSV sizes take precedence over conditional format sizes
+      if (!isCsvMode) {
+        const format = getNodeFormat(n);
+        if (format?.sizeEnabled && format?.nodeSize) {
+          n.r = (format.nodeSize * scale);
+          return;
+        }
       }
+      n.r = (n.baseR || 15) * scale;
     });
   }
 
@@ -1173,8 +1288,8 @@
           return rule;
         }
       } else if (rule.type === 'category') {
-        const category = node.raw && node.raw['Category'];
-        if (rule.targets.includes(category)) {
+        const nodeCats = getNodeCategories(node);
+        if (nodeCats.some(c => rule.targets.includes(c))) {
           node._cachedFormat = rule;
           return rule;
         }
@@ -1340,8 +1455,11 @@
           formattingSettings.backgroundColor = row.BackgroundColor;
           document.documentElement.style.setProperty('--white', row.BackgroundColor);
         }
-        if (row.SizeMode) formattingSettings.nodeSizeMode = row.SizeMode;
+        if (row.SizeMode) formattingSettings.nodeSizeMode = row.SizeMode.toLowerCase();
         if (row.CustomNodeSize) formattingSettings.customNodeSize = parseFloat(row.CustomNodeSize);
+        if (row.MinNodeSize) formattingSettings.minNodeSize = parseFloat(row.MinNodeSize);
+        if (row.MaxNodeSize) formattingSettings.maxNodeSize = parseFloat(row.MaxNodeSize);
+        if (row.CsvSizeScale) formattingSettings.csvSizeScale = parseFloat(row.CsvSizeScale);
         // Load legend settings
         if (row.LegendEnabled !== undefined) {
           legendEnabled = String(row.LegendEnabled).toLowerCase() === 'true';
@@ -1353,6 +1471,26 @@
             legendColors[i - 1] = row[colorKey];
           }
         }
+        // Load default shape
+        if (row.DefaultShape) {
+          formattingSettings.defaultShape = row.DefaultShape;
+        }
+        // Load shape legend settings
+        if (row.ShapeLegendEnabled !== undefined) {
+          shapeLegendEnabled = String(row.ShapeLegendEnabled).toLowerCase() === 'true';
+        }
+        const shapeTypes = ['Circle', 'Square', 'Triangle', 'Diamond'];
+        const shapeKeys = ['circle', 'square', 'triangle', 'diamond'];
+        shapeTypes.forEach((type, i) => {
+          const enabledKey = `ShapeLegend${type}Enabled`;
+          const labelKey = `ShapeLegend${type}Label`;
+          if (row[enabledKey] !== undefined) {
+            shapeLegendItems[shapeKeys[i]].enabled = String(row[enabledKey]).toLowerCase() === 'true';
+          }
+          if (row[labelKey] !== undefined) {
+            shapeLegendItems[shapeKeys[i]].label = row[labelKey];
+          }
+        });
       } else if (row.RuleType === 'Entity' || row.RuleType === 'Category') {
         const targets = row.Targets ? row.Targets.split('|').map(t => t.trim()).filter(t => t) : [];
         
@@ -1394,7 +1532,9 @@
           nodeSize: parsedNodeSize,
           lineEnabled: lineEnabled,
           lineColor: row.LineColor || null,
-          lineThickness: row.LineThickness ? parseFloat(row.LineThickness) : null
+          lineThickness: row.LineThickness ? parseFloat(row.LineThickness) : null,
+          shapeEnabled: row.ShapeEnabled ? String(row.ShapeEnabled).toLowerCase() === 'true' : false,
+          nodeShape: row.NodeShape || null
         });
       }
     });
@@ -1429,6 +1569,12 @@
     // Check if Entities.csv has Views column
     if (entitiesData.length > 0) {
       hasViewsColumn = 'Views' in entitiesData[0];
+      hasSizeColumn = 'Size' in entitiesData[0];
+    }
+    
+    // If csv mode was set but no Size column, fall back to connections
+    if (formattingSettings.nodeSizeMode === 'csv' && !hasSizeColumn) {
+      formattingSettings.nodeSizeMode = 'connections';
     }
 
     // Create nodes
@@ -1467,15 +1613,17 @@
     // Update legend after nodes are loaded
     updateCategoryColors();
     updateLegend();
+    updateShapeLegend();
     
     // FORCE legend update again to be absolutely certain
     setTimeout(() => {
       updateCategoryColors();
       updateLegend();
+      updateShapeLegend();
       // Rescale nodes after legend is fully rendered to get correct padding
       scaleNodesToFit();
       render();
-    }, 100);
+    }, 150);
 
     loadingOverlay.style.display = 'none';
   }
@@ -1582,10 +1730,15 @@
         n.unfixedY = newY;
       }
       
-      // Scale node radius - check for conditional format first
-      const format = getNodeFormat(n);
-      if (format?.sizeEnabled && format?.nodeSize) {
-        n.r = (format.nodeSize * currentScaleFactor);
+      // Scale node radius - check for conditional format first (but csv mode takes precedence)
+      const isCsvMode = formattingSettings.nodeSizeMode === 'csv' && hasSizeColumn;
+      if (!isCsvMode) {
+        const format = getNodeFormat(n);
+        if (format?.sizeEnabled && format?.nodeSize) {
+          n.r = (format.nodeSize * currentScaleFactor);
+        } else {
+          n.r = orig.baseR * currentScaleFactor;
+        }
       } else {
         n.r = orig.baseR * currentScaleFactor;
       }
@@ -2515,6 +2668,9 @@
       isHighlightedInView = highlightViews && highlightViews.has(currentViewId);
     }
     
+    // Get node shape
+    const shape = getNodeShape(n);
+    
     // Use hover colors/thickness if node is hovered OR selected OR highlighted in current view
     // Only use conditional format if the respective section is enabled
     const nodeColor = isHovered ? formattingSettings.nodeHoverColor : (format?.nodeEnabled && format?.nodeColor ? format.nodeColor : formattingSettings.nodeColor);
@@ -2531,7 +2687,8 @@
       ctx.save();
       ctx.globalAlpha = opacity;
       ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
+      // Clip to shape
+      drawShapePath(ctx, shape, x, y, r);
       ctx.clip();
       const img = n.imageBitmap;
       const iw = img.width || img.naturalWidth || 1;
@@ -2547,8 +2704,7 @@
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, dx, dy, dw, dh);
       } catch (e) {
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI*2);
+        drawShapePath(ctx, shape, x, y, r);
         ctx.fillStyle = nodeColor;
         ctx.fill();
       }
@@ -2556,8 +2712,7 @@
     } else {
       ctx.save();
       ctx.globalAlpha = opacity;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
+      drawShapePath(ctx, shape, x, y, r);
       ctx.fillStyle = nodeColor;
       ctx.fill();
       ctx.restore();
@@ -2583,8 +2738,7 @@
       ctx.shadowBlur = glowSize;
     }
     
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI*2);
+    drawShapePath(ctx, shape, x, y, r);
     ctx.lineWidth = outlineThickness / zoomLevel;
     ctx.strokeStyle = outlineColor;
     ctx.stroke();
@@ -2641,12 +2795,16 @@
    * LEGEND FUNCTIONS
    ************************************************************************/
   // Function to extract unique categories and assign colors
+  // Helper: split comma-separated Category field into individual trimmed categories
+  function getNodeCategories(node) {
+    if (!node.raw || !node.raw['Category']) return [];
+    return node.raw['Category'].split(',').map(c => c.trim()).filter(c => c.length > 0);
+  }
+
   function updateCategoryColors() {
     const categories = new Set();
     nodes.forEach(node => {
-      if (node.raw && node.raw['Category']) {
-        categories.add(node.raw['Category']);
-      }
+      getNodeCategories(node).forEach(cat => categories.add(cat));
     });
     let nodesWithCategory = 0;
     
@@ -2679,6 +2837,12 @@
   function updateLegend() {
     if (!legendContainer) {
       console.error('Legend container not found!');
+      return;
+    }
+    
+    // If legend is disabled via Formatting.csv, hide it
+    if (!legendEnabled) {
+      legendContainer.style.display = 'none';
       return;
     }
     
@@ -2741,6 +2905,83 @@
   }
 
   /************************************************************************
+   * SHAPE DRAWING HELPERS
+   ************************************************************************/
+  function drawShapePath(ctx, shape, x, y, r) {
+    switch (shape) {
+      case 'square':
+        ctx.beginPath();
+        ctx.rect(x - r, y - r, r * 2, r * 2);
+        break;
+      case 'triangle':
+        ctx.beginPath();
+        ctx.moveTo(x, y - r * 1.15);
+        ctx.lineTo(x + r * 1.05, y + r * 0.75);
+        ctx.lineTo(x - r * 1.05, y + r * 0.75);
+        ctx.closePath();
+        break;
+      case 'diamond':
+        ctx.beginPath();
+        ctx.moveTo(x, y - r * 1.15);
+        ctx.lineTo(x + r * 1.0, y);
+        ctx.lineTo(x, y + r * 1.15);
+        ctx.lineTo(x - r * 1.0, y);
+        ctx.closePath();
+        break;
+      case 'circle':
+      default:
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        break;
+    }
+  }
+
+  function getNodeShape(node) {
+    const format = getNodeFormat(node);
+    if (format && format.shapeEnabled && format.nodeShape) {
+      return format.nodeShape;
+    }
+    return formattingSettings.defaultShape || 'circle';
+  }
+
+  /************************************************************************
+   * SHAPE LEGEND
+   ************************************************************************/
+  const SHAPE_ICONS = { circle: '〇', square: '◻', triangle: '△', diamond: '◇' };
+
+  function updateShapeLegend() {
+    if (!shapeLegendEnabled || !shapeLegendContainer) {
+      if (shapeLegendContainer) shapeLegendContainer.style.display = 'none';
+      return;
+    }
+
+    const activeItems = Object.entries(shapeLegendItems).filter(([, v]) => v.enabled && v.label.trim());
+    if (activeItems.length === 0) {
+      shapeLegendContainer.style.display = 'none';
+      return;
+    }
+
+    shapeLegendContainer.style.display = 'flex';
+    shapeLegendContainer.innerHTML = '';
+
+    activeItems.forEach(([shape, cfg]) => {
+      const item = document.createElement('div');
+      item.className = 'shape-legend-item';
+
+      const icon = document.createElement('span');
+      icon.className = 'shape-legend-icon';
+      icon.textContent = SHAPE_ICONS[shape];
+
+      const label = document.createElement('span');
+      label.textContent = cfg.label;
+
+      item.appendChild(icon);
+      item.appendChild(label);
+      shapeLegendContainer.appendChild(item);
+    });
+  }
+
+  /************************************************************************
    * RENDER
    ************************************************************************/
   function render() {
@@ -2760,9 +3001,10 @@
       // Check if node should be highlighted based on selection AND legend filtering
       let shouldHighlight = shouldHighlightNode(node);
       
-      // If legend is enabled and category is inactive, force unhighlighted (low opacity)
-      if (legendEnabled && node.raw && node.raw['Category']) {
-        if (!activeCategories.has(node.raw['Category'])) {
+      // If legend is enabled and a specific category filter is active, dim non-matching nodes
+      if (legendEnabled && activeCategories.size < uniqueCategories.length) {
+        const nodeCats = getNodeCategories(node);
+        if (nodeCats.length === 0 || !nodeCats.some(c => activeCategories.has(c))) {
           shouldHighlight = false;
         }
       }
@@ -2793,8 +3035,10 @@
     // Helper function to check if a node's category is active
     const isNodeCategoryActive = (node) => {
       if (uniqueCategories.length === 0) return true; // No legend filtering if no categories
-      if (!node.raw || !node.raw['Category']) return false; // Nodes without category are dimmed when legend is active
-      return activeCategories.has(node.raw['Category']);
+      if (activeCategories.size === uniqueCategories.length) return true; // All categories active, show everything
+      const nodeCats = getNodeCategories(node);
+      if (nodeCats.length === 0) return false; // Nodes without category are dimmed when filtering
+      return nodeCats.some(c => activeCategories.has(c));
     };
     const sortedLinks = visibleLinks.slice().sort((a, b) => {
       const aIsSelected = selectedNode && (a.source === selectedNode || a.target === selectedNode);
@@ -3389,7 +3633,7 @@
   }
 
   function clearInfoPanel() {
-    nodeTitleEl.html('Click/hover on map, search for a person/group or click Start Story');
+    nodeTitleEl.html('Click/hover on map or search for a person/group');
     // nodeMetaEl.text('');
     nodeLinkEl.html('');
     connectionsBox.innerHTML = '';
