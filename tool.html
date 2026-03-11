@@ -351,13 +351,15 @@
       top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      max-width: 700px;
+      max-width: 96%;
+      max-height: 30vh;
+      overflow-y: auto;
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 4px 6px;
       justify-content: center;
       align-items: center;
-      padding: 8px 12px;
+      padding: 5px 10px;
       background: rgba(255, 255, 255, 0.95);
       border: 0px solid var(--panel-grey);
       border-radius: 6px;
@@ -368,14 +370,15 @@
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
+      gap: 3px;
+      padding: 2px 5px;
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.2s;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       user-select: none;
+      line-height: 1.2;
     }
 
     .legend-item:hover {
@@ -388,10 +391,51 @@
     }
 
     .legend-color-box {
-      width: 10px;
-      height: 10px;
-      border-radius: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 8px;
       border: 1px solid rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    /* Shape Legend Container */
+    #shape-legend-container {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 96%;
+      max-height: 30vh;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+      justify-content: center;
+      align-items: center;
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 0px solid var(--panel-grey);
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    .shape-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      user-select: none;
+      line-height: 1.2;
+    }
+
+    .shape-legend-icon {
+      font-size: 10px;
+      flex-shrink: 0;
+      line-height: 1;
     }
     
     .format-section-header h3 {
@@ -991,7 +1035,7 @@
           <div id="rule-controls" style="display: none; padding: 8px; background: var(--white); border-bottom: 1px solid var(--panel-grey); flex-direction:row-reverse ; gap: 4px; ">
             <button id="rule-delete-btn" style="width: 30px; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-family: var(--font-family); font-size: 11px; font-weight: 600; background: var(--error-red); color: white;" title="Delete Rule">×</button>
             <button id="rule-down-btn" style="width: 30px; padding: 6px 9px; border: none; border-radius: 4px; cursor: pointer; font-family: var(--font-family); font-size: 11px; font-weight: 600; background: var(--white); color: var(--text-black);" title="Move Rule Down">▼</button>
-            <button id="rule-up-btn" style="width: 30px; padding: 6px 9px; border: none; border-radius: 4px; cursor: pointer; font-family: var(--font-family); font-size: 11px; font-weight: 600; background: var(--white); color: var(--text-black);" title="Move Rule Up">▲</button>
+            <button id="rule-up-btn" style="width: 30px; padding: 6px 9px; border: none; border-radius: 4px; cursor: pointer; font-family: var(--font-family); font-size: 11px; font-weight: 600; background: var(--white); color: var(--text-black);" title="Move Rule Up">△</button>
             <label style="display: block; font-size: 11px; padding-top: 6px; padding-right: 6px; font-family: var(--font-family); color: var(--near-black);">Rule controls:</label>
           </div>
           
@@ -1017,6 +1061,35 @@
             <div class="format-control">
               <label>Use Legend</label>
               <input type="checkbox" id="fmt-legend-enabled" style="margin-right: 10px;">
+            </div>
+            <div class="format-control">
+              <label>Use Shape Legend</label>
+              <input type="checkbox" id="fmt-shape-legend-enabled" style="margin-right: 10px;">
+            </div>
+            <div id="shape-legend-config-section" style="padding: 8px 0; display: none;">
+              <div style="font-size: 11px; color: grey; font-weight: 400; padding-left: 16px; margin-bottom: 6px;">Shape Legend Items</div>
+              <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 16px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" id="shape-legend-circle-enabled" checked style="width: 14px; height: 14px; margin: 0;">
+                  <span style="font-size: 13px; width: 16px; text-align: center;">〇</span>
+                  <input type="text" id="shape-legend-circle-label" placeholder="Circle label" style="flex: 1; padding: 4px 6px; border: 1px solid var(--panel-grey); border-radius: 3px; font-family: var(--font-family); font-size: 11px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" id="shape-legend-square-enabled" checked style="width: 14px; height: 14px; margin: 0;">
+                  <span style="font-size: 13px; width: 16px; text-align: center;">◻</span>
+                  <input type="text" id="shape-legend-square-label" placeholder="Square label" style="flex: 1; padding: 4px 6px; border: 1px solid var(--panel-grey); border-radius: 3px; font-family: var(--font-family); font-size: 11px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" id="shape-legend-triangle-enabled" style="width: 14px; height: 14px; margin: 0;">
+                  <span style="font-size: 13px; width: 16px; text-align: center;">△</span>
+                  <input type="text" id="shape-legend-triangle-label" placeholder="Triangle label" style="flex: 1; padding: 4px 6px; border: 1px solid var(--panel-grey); border-radius: 3px; font-family: var(--font-family); font-size: 11px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" id="shape-legend-diamond-enabled" style="width: 14px; height: 14px; margin: 0;">
+                  <span style="font-size: 13px; width: 16px; text-align: center;">◇</span>
+                  <input type="text" id="shape-legend-diamond-label" placeholder="Diamond label" style="flex: 1; padding: 4px 6px; border: 1px solid var(--panel-grey); border-radius: 3px; font-family: var(--font-family); font-size: 11px;">
+                </div>
+              </div>
             </div>
             <div id="legend-colors-section" style="padding: 8px 0; display: none;">
               <div style="font-size: 11px; color: grey; font-weight: 400; padding-left: 16px; margin-bottom: 6px;">Legend Colors</div>
@@ -1078,6 +1151,25 @@
             <input type="checkbox" id="fmt-node-enabled" title="Enable/disable node color formatting for this rule" style="display: none; margin: 0; width: 18px; height: 18px;">
             <h3 class="format-subheader" style="padding-top: 12px; margin: 0; flex: 1;">Node Fill</h3>
           </div>
+          <div class="format-control" id="default-shape-control">
+            <label>Default Shape</label>
+            <select id="fmt-default-shape" style="padding: 6px; margin-right: 10px; border: 1px solid var(--panel-grey); border-radius: 4px; font-family: var(--font-family); font-size: 12px;">
+              <option value="circle">〇 Circle</option>
+              <option value="square">◻ Square</option>
+              <option value="triangle">△ Triangle</option>
+              <option value="diamond">◇ Diamond</option>
+            </select>
+          </div>
+          <div class="format-control" id="rule-shape-control" style="display: none;">
+            <label>Rule Shape</label>
+            <select id="fmt-rule-shape" style="padding: 6px; margin-right: 10px; border: 1px solid var(--panel-grey); border-radius: 4px; font-family: var(--font-family); font-size: 12px;">
+              <option value="">— Inherit Default —</option>
+              <option value="circle">〇 Circle</option>
+              <option value="square">◻ Square</option>
+              <option value="triangle">△ Triangle</option>
+              <option value="diamond">◇ Diamond</option>
+            </select>
+          </div>
           <div class="format-control">
             <label>Color</label>
             <input type="text" class="color-input" id="fmt-node-color" value="#000000" placeholder="#RRGGBB" pattern="^#[0-9A-Fa-f]{6}$" maxlength="7">
@@ -1119,6 +1211,7 @@
             <select id="fmt-size-mode" style="padding: 6px; margin-right: 10px; border: 1px solid var(--panel-grey); border-radius: 4px; font-family: var(--font-family); font-size: 12px;">
               <option value="connections"># of Connections</option>
               <option value="custom" selected>Custom Size</option>
+              <option value="csv" id="csv-size-option" style="display: none;">Use Entities.csv Size</option>
             </select>
           </div>
           <div class="format-control" id="custom-size-checkbox-control" style="display: none;">
@@ -1128,6 +1221,13 @@
           <div class="format-control" id="custom-size-control" style="display: none;">
             <label>Custom Size (px)</label>
             <input type="number" id="fmt-custom-size" min="1" value="20">
+          </div>
+          <div class="format-control" id="csv-size-scale-control" style="display: none;">
+            <label>Size Scale</label>
+            <div style="display: flex; align-items: center; gap: 6px; margin-right: 10px;">
+              <input type="range" id="fmt-csv-size-scale" min="0.1" max="5" step="0.1" value="1.0" style="width: 100px;">
+              <span id="csv-size-scale-value" style="font-size: 11px; min-width: 28px;">1.0×</span>
+            </div>
           </div>
           <div class="format-control" id="min-size-control">
             <label>Min Size (px)</label>
@@ -1183,6 +1283,9 @@
     <div id="graph-area">
       <canvas id="canvas"></canvas>
       <button id="pause-physics-btn">⏸ Pause Physics</button>
+      
+      <!-- Shape Legend Container -->
+      <div id="shape-legend-container" style="display: none;"></div>
       
       <!-- Legend Container -->
       <div id="legend-container" style="display: none;"></div>
@@ -1307,11 +1410,15 @@
     lineThickness: 3,
     lineHoverThickness: 5,
     backgroundColor: '#FFFFFF',
-    nodeSizeMode: 'custom', // 'connections' or 'custom'
+    nodeSizeMode: 'custom', // 'connections', 'custom', or 'csv'
     customNodeSize: 30,
     minNodeSize: 5,
-    maxNodeSize: 80
+    maxNodeSize: 80,
+    csvSizeScale: 1.0,
+    defaultShape: 'circle' // 'circle', 'square', 'triangle', 'diamond'
   };
+
+  let hasSizeColumn = false; // Whether Entities.csv has a 'Size' column
 
   // Legend Settings
   let legendEnabled = false;
@@ -1322,6 +1429,15 @@
   let uniqueCategories = [];
   let categoryColorMap = new Map();
   let activeCategories = new Set(); // Tracks which categories are currently visible
+
+  // Shape Legend Settings
+  let shapeLegendEnabled = false;
+  let shapeLegendItems = {
+    circle:   { enabled: true,  label: '' },
+    square:   { enabled: true,  label: '' },
+    triangle: { enabled: false, label: '' },
+    diamond:  { enabled: false, label: '' }
+  };
 
   // Global state
   let nodes = [];
@@ -1423,6 +1539,10 @@
   const customSizeControl = document.getElementById('custom-size-control');
   const customSizeCheckboxControl = document.getElementById("custom-size-checkbox-control");
   const fmtCustomSizeEnabled = document.getElementById("fmt-custom-size-enabled");
+  const csvSizeScaleControl = document.getElementById('csv-size-scale-control');
+  const fmtCsvSizeScale = document.getElementById('fmt-csv-size-scale');
+  const csvSizeScaleValue = document.getElementById('csv-size-scale-value');
+  const csvSizeOption = document.getElementById('csv-size-option');
   
   // Legend controls
   const fmtLegendEnabled = document.getElementById('fmt-legend-enabled');
@@ -1450,6 +1570,25 @@
   const outlineHoverThicknessControl = document.getElementById('outline-hover-thickness-control');
   const lineHoverColorControl = document.getElementById('line-hover-color-control');
   const lineHoverThicknessControl = document.getElementById('line-hover-thickness-control');
+  
+  // Shape controls
+  const fmtDefaultShape = document.getElementById('fmt-default-shape');
+  const fmtRuleShape = document.getElementById('fmt-rule-shape');
+  const defaultShapeControl = document.getElementById('default-shape-control');
+  const ruleShapeControl = document.getElementById('rule-shape-control');
+  
+  // Shape legend controls
+  const fmtShapeLegendEnabled = document.getElementById('fmt-shape-legend-enabled');
+  const shapeLegendConfigSection = document.getElementById('shape-legend-config-section');
+  const shapeLegendContainer = document.getElementById('shape-legend-container');
+  const shapeLegendCircleEnabled = document.getElementById('shape-legend-circle-enabled');
+  const shapeLegendCircleLabel = document.getElementById('shape-legend-circle-label');
+  const shapeLegendSquareEnabled = document.getElementById('shape-legend-square-enabled');
+  const shapeLegendSquareLabel = document.getElementById('shape-legend-square-label');
+  const shapeLegendTriangleEnabled = document.getElementById('shape-legend-triangle-enabled');
+  const shapeLegendTriangleLabel = document.getElementById('shape-legend-triangle-label');
+  const shapeLegendDiamondEnabled = document.getElementById('shape-legend-diamond-enabled');
+  const shapeLegendDiamondLabel = document.getElementById('shape-legend-diamond-label');
 
   // Section enable checkboxes (for conditional formatting rules)
   const fmtNodeEnabled = document.getElementById('fmt-node-enabled');
@@ -1510,12 +1649,19 @@
     fmtCustomSize.value = formattingSettings.customNodeSize;
     fmtMinSize.value = formattingSettings.minNodeSize;
     fmtMaxSize.value = formattingSettings.maxNodeSize;
+    fmtCsvSizeScale.value = formattingSettings.csvSizeScale;
+    csvSizeScaleValue.textContent = formattingSettings.csvSizeScale.toFixed(1) + '×';
     
-    // Show custom size control since default mode is now 'custom'
+    // Show appropriate size control based on mode
     if (formattingSettings.nodeSizeMode === 'custom') {
       customSizeControl.style.display = 'flex';
+      csvSizeScaleControl.style.display = 'none';
+    } else if (formattingSettings.nodeSizeMode === 'csv') {
+      customSizeControl.style.display = 'none';
+      csvSizeScaleControl.style.display = 'flex';
     } else {
       customSizeControl.style.display = 'none';
+      csvSizeScaleControl.style.display = 'none';
     }
     
     // Update visual appearance of all color inputs
@@ -1748,11 +1894,17 @@
     formattingSettings.nodeSizeMode = e.target.value;
     if (e.target.value === 'custom') {
       customSizeControl.style.display = 'flex';
+      csvSizeScaleControl.style.display = 'none';
+    } else if (e.target.value === 'csv') {
+      customSizeControl.style.display = 'none';
+      csvSizeScaleControl.style.display = 'flex';
     } else {
       customSizeControl.style.display = 'none';
+      csvSizeScaleControl.style.display = 'none';
     }
     updateNodeSizes();
     schedulePhysicsRestart();
+    markDirty();
     render();
   });
 
@@ -1794,16 +1946,93 @@
     render();
   });
 
+  fmtCsvSizeScale.addEventListener('input', (e) => {
+    formattingSettings.csvSizeScale = parseFloat(e.target.value);
+    csvSizeScaleValue.textContent = parseFloat(e.target.value).toFixed(1) + '×';
+    updateNodeSizes();
+    schedulePhysicsRestart();
+    markDirty();
+    render();
+  });
+
   /************************************************************************
    * LEGEND CONTROLS
    ************************************************************************/
+  // Calculate legend height for node positioning
+  function getLegendPadding() {
+    let padding = 0;
+    if (shapeLegendEnabled && shapeLegendContainer.style.display !== 'none') {
+      padding += shapeLegendContainer.offsetHeight + 10;
+    }
+    if (legendEnabled && legendContainer.style.display !== 'none') {
+      // Position color legend below shape legend
+      const shapeLegendHeight = (shapeLegendEnabled && shapeLegendContainer.style.display !== 'none') ? shapeLegendContainer.offsetHeight + 10 : 0;
+      legendContainer.style.top = (10 + shapeLegendHeight) + 'px';
+      padding += legendContainer.offsetHeight + 10;
+    }
+    return padding > 0 ? padding + 10 : 0;
+  }
+
   fmtLegendEnabled.addEventListener('change', (e) => {
     legendEnabled = e.target.checked;
     // Show/hide the color picker section
     legendColorsSection.style.display = legendEnabled ? 'block' : 'none';
     updateLegend();
+    schedulePhysicsRestart();
     render();
   });
+
+  // Shape legend event listeners
+  fmtShapeLegendEnabled.addEventListener('change', (e) => {
+    shapeLegendEnabled = e.target.checked;
+    shapeLegendConfigSection.style.display = shapeLegendEnabled ? 'block' : 'none';
+    updateShapeLegend();
+    schedulePhysicsRestart();
+    render();
+  });
+
+  // Default shape dropdown
+  fmtDefaultShape.addEventListener('change', (e) => {
+    formattingSettings.defaultShape = e.target.value;
+    invalidateFormatCache();
+    render();
+  });
+
+  // Rule shape dropdown
+  fmtRuleShape.addEventListener('change', (e) => {
+    if (formatUIState.isRuleMode()) {
+      const rule = formatUIState.getCurrentRule();
+      if (rule) {
+        rule.nodeShape = e.target.value || null;
+        rule.shapeEnabled = !!e.target.value;
+        invalidateFormatCache();
+        render();
+      }
+    }
+  });
+
+  // Shape legend item event listeners
+  function setupShapeLegendListeners() {
+    const controls = [
+      { enabledEl: shapeLegendCircleEnabled, labelEl: shapeLegendCircleLabel, shape: 'circle' },
+      { enabledEl: shapeLegendSquareEnabled, labelEl: shapeLegendSquareLabel, shape: 'square' },
+      { enabledEl: shapeLegendTriangleEnabled, labelEl: shapeLegendTriangleLabel, shape: 'triangle' },
+      { enabledEl: shapeLegendDiamondEnabled, labelEl: shapeLegendDiamondLabel, shape: 'diamond' }
+    ];
+    controls.forEach(({ enabledEl, labelEl, shape }) => {
+      enabledEl.addEventListener('change', () => {
+        shapeLegendItems[shape].enabled = enabledEl.checked;
+        updateShapeLegend();
+        render();
+      });
+      labelEl.addEventListener('input', () => {
+        shapeLegendItems[shape].label = labelEl.value;
+        updateShapeLegend();
+        render();
+      });
+    });
+  }
+  setupShapeLegendListeners();
 
   // Add event listeners for all legend color pickers
   legendColorInputs.forEach((input, index) => {
@@ -1860,13 +2089,17 @@
     allColorInputs.forEach(input => updateColorInputAppearance(input));
   }
 
+  // Helper: split comma-separated Category field into individual trimmed categories
+  function getNodeCategories(node) {
+    if (!node.raw || !node.raw['Category']) return [];
+    return node.raw['Category'].split(',').map(c => c.trim()).filter(c => c.length > 0);
+  }
+
   // Function to extract unique categories and assign colors
   function updateCategoryColors() {
     const categories = new Set();
     nodes.forEach(node => {
-      if (node.raw && node.raw['Category']) {
-        categories.add(node.raw['Category']);
-      }
+      getNodeCategories(node).forEach(cat => categories.add(cat));
     });
     
     uniqueCategories = Array.from(categories).sort();
@@ -1945,6 +2178,83 @@
   }
 
   /************************************************************************
+   * SHAPE DRAWING HELPERS
+   ************************************************************************/
+  function drawShapePath(ctx, shape, x, y, r) {
+    switch (shape) {
+      case 'square':
+        ctx.beginPath();
+        ctx.rect(x - r, y - r, r * 2, r * 2);
+        break;
+      case 'triangle':
+        ctx.beginPath();
+        ctx.moveTo(x, y - r * 1.15);
+        ctx.lineTo(x + r * 1.05, y + r * 0.75);
+        ctx.lineTo(x - r * 1.05, y + r * 0.75);
+        ctx.closePath();
+        break;
+      case 'diamond':
+        ctx.beginPath();
+        ctx.moveTo(x, y - r * 1.15);
+        ctx.lineTo(x + r * 1.0, y);
+        ctx.lineTo(x, y + r * 1.15);
+        ctx.lineTo(x - r * 1.0, y);
+        ctx.closePath();
+        break;
+      case 'circle':
+      default:
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        break;
+    }
+  }
+
+  function getNodeShape(node) {
+    const format = getNodeFormat(node);
+    if (format && format.shapeEnabled && format.nodeShape) {
+      return format.nodeShape;
+    }
+    return formattingSettings.defaultShape || 'circle';
+  }
+
+  /************************************************************************
+   * SHAPE LEGEND
+   ************************************************************************/
+  const SHAPE_ICONS = { circle: '〇', square: '◻', triangle: '△', diamond: '◇' };
+
+  function updateShapeLegend() {
+    if (!shapeLegendEnabled) {
+      shapeLegendContainer.style.display = 'none';
+      return;
+    }
+
+    const activeItems = Object.entries(shapeLegendItems).filter(([, v]) => v.enabled && v.label.trim());
+    if (activeItems.length === 0) {
+      shapeLegendContainer.style.display = 'none';
+      return;
+    }
+
+    shapeLegendContainer.style.display = 'flex';
+    shapeLegendContainer.innerHTML = '';
+
+    activeItems.forEach(([shape, cfg]) => {
+      const item = document.createElement('div');
+      item.className = 'shape-legend-item';
+
+      const icon = document.createElement('span');
+      icon.className = 'shape-legend-icon';
+      icon.textContent = SHAPE_ICONS[shape];
+
+      const label = document.createElement('span');
+      label.textContent = cfg.label;
+
+      item.appendChild(icon);
+      item.appendChild(label);
+      shapeLegendContainer.appendChild(item);
+    });
+  }
+
+  /************************************************************************
    * CONDITIONAL FORMATTING
    ************************************************************************/
   let currentEditingRuleIndex = null;
@@ -2007,12 +2317,28 @@
       ruleControls.style.display = 'none';
       customSizeCheckboxControl.style.display = 'none';
       customSizeControl.style.display = formattingSettings.nodeSizeMode === 'custom' ? 'flex' : 'none';
+      csvSizeScaleControl.style.display = formattingSettings.nodeSizeMode === 'csv' ? 'flex' : 'none';
+      
+      // Show/hide csv size option based on whether Size column exists
+      csvSizeOption.style.display = hasSizeColumn ? '' : 'none';
+      // If csv mode was selected but Size column no longer exists, fall back to custom
+      if (formattingSettings.nodeSizeMode === 'csv' && !hasSizeColumn) {
+        formattingSettings.nodeSizeMode = 'custom';
+        fmtSizeMode.value = 'custom';
+        customSizeControl.style.display = 'flex';
+        csvSizeScaleControl.style.display = 'none';
+      }
       
       sizeModeControl.style.display = 'flex';
       minSizeControl.style.display = 'flex';
       maxSizeControl.style.display = 'flex';
       otherOptionsSection.style.display = 'block';
       legendSection.style.display = 'block';
+      
+      // Shape controls: show default, hide rule
+      defaultShapeControl.style.display = 'flex';
+      ruleShapeControl.style.display = 'none';
+      fmtDefaultShape.value = formattingSettings.defaultShape;
       
       nodeHoverColorControl.style.display = 'flex';
       outlineHoverColorControl.style.display = 'flex';
@@ -2049,10 +2375,16 @@
       customSizeCheckboxControl.style.display = 'flex';
       
       sizeModeControl.style.display = 'none';
+      csvSizeScaleControl.style.display = 'none';
       minSizeControl.style.display = 'none';
       maxSizeControl.style.display = 'none';
       otherOptionsSection.style.display = 'none';
       legendSection.style.display = 'none';
+      
+      // Shape controls: hide default, show rule
+      defaultShapeControl.style.display = 'none';
+      ruleShapeControl.style.display = 'flex';
+      fmtRuleShape.value = rule.nodeShape || '';
       
       nodeHoverColorControl.style.display = 'none';
       outlineHoverColorControl.style.display = 'none';
@@ -2195,7 +2527,9 @@
         nodeSize: null,
         lineEnabled: false,
         lineColor: formattingSettings.lineColor,
-        lineThickness: formattingSettings.lineThickness
+        lineThickness: formattingSettings.lineThickness,
+        shapeEnabled: false,
+        nodeShape: null
       };
       
       conditionalFormats.push(newRule);
@@ -2339,9 +2673,17 @@
 
     if (formattingSettings.nodeSizeMode === 'custom') {
       customSizeControl.style.display = 'flex';
+      csvSizeScaleControl.style.display = 'none';
+    } else if (formattingSettings.nodeSizeMode === 'csv') {
+      customSizeControl.style.display = 'none';
+      csvSizeScaleControl.style.display = 'flex';
     } else {
       customSizeControl.style.display = 'none';
+      csvSizeScaleControl.style.display = 'none';
     }
+    
+    // Show/hide csv size option based on data
+    csvSizeOption.style.display = hasSizeColumn ? '' : 'none';
   }
 
   function disableFormattingControls() {
@@ -2407,8 +2749,7 @@
       if (currentRuleType === 'entity') {
         items.add(node.name);
       } else {
-        const category = (node.raw && (node.raw['Category'] || '')) || '';
-        if (category) items.add(category);
+        getNodeCategories(node).forEach(cat => items.add(cat));
       }
     });
     
@@ -2644,8 +2985,8 @@ function loadFormatRule(ruleIdentifier) {
         return rule;
       }
       if (rule.type === 'category') {
-        const category = (node.raw && (node.raw['Category'] || '')) || '';
-        if (rule.targets.includes(category)) {
+        const nodeCats = getNodeCategories(node);
+        if (nodeCats.some(c => rule.targets.includes(c))) {
           node._cachedFormat = rule;
           return rule;
         }
@@ -2947,8 +3288,13 @@ function loadFormatRule(ruleIdentifier) {
           fmtSizeMode.value = row.SizeMode.toLowerCase();
           if (row.SizeMode.toLowerCase() === 'custom') {
             customSizeControl.style.display = 'flex';
+            csvSizeScaleControl.style.display = 'none';
+          } else if (row.SizeMode.toLowerCase() === 'csv') {
+            customSizeControl.style.display = 'none';
+            csvSizeScaleControl.style.display = 'flex';
           } else {
             customSizeControl.style.display = 'none';
+            csvSizeScaleControl.style.display = 'none';
           }
         }
         if (row.CustomNodeSize) {
@@ -2963,6 +3309,11 @@ function loadFormatRule(ruleIdentifier) {
         if (row.MaxNodeSize) {
           formattingSettings.maxNodeSize = parseFloat(row.MaxNodeSize);
           fmtMaxSize.value = row.MaxNodeSize;
+        }
+        if (row.CsvSizeScale) {
+          formattingSettings.csvSizeScale = parseFloat(row.CsvSizeScale);
+          fmtCsvSizeScale.value = row.CsvSizeScale;
+          csvSizeScaleValue.textContent = parseFloat(row.CsvSizeScale).toFixed(1) + '×';
         }
         // Load legend settings
         if (row.LegendEnabled !== undefined) {
@@ -2981,6 +3332,33 @@ function loadFormatRule(ruleIdentifier) {
             }
           }
         }
+        // Load default shape
+        if (row.DefaultShape) {
+          formattingSettings.defaultShape = row.DefaultShape;
+          fmtDefaultShape.value = row.DefaultShape;
+        }
+        // Load shape legend settings
+        if (row.ShapeLegendEnabled !== undefined) {
+          shapeLegendEnabled = String(row.ShapeLegendEnabled).toLowerCase() === 'true';
+          fmtShapeLegendEnabled.checked = shapeLegendEnabled;
+          shapeLegendConfigSection.style.display = shapeLegendEnabled ? 'block' : 'none';
+        }
+        const shapeTypes = ['Circle', 'Square', 'Triangle', 'Diamond'];
+        const shapeKeys = ['circle', 'square', 'triangle', 'diamond'];
+        const shapeEnabledEls = [shapeLegendCircleEnabled, shapeLegendSquareEnabled, shapeLegendTriangleEnabled, shapeLegendDiamondEnabled];
+        const shapeLabelEls = [shapeLegendCircleLabel, shapeLegendSquareLabel, shapeLegendTriangleLabel, shapeLegendDiamondLabel];
+        shapeTypes.forEach((type, i) => {
+          const enabledKey = `ShapeLegend${type}Enabled`;
+          const labelKey = `ShapeLegend${type}Label`;
+          if (row[enabledKey] !== undefined) {
+            shapeLegendItems[shapeKeys[i]].enabled = String(row[enabledKey]).toLowerCase() === 'true';
+            shapeEnabledEls[i].checked = shapeLegendItems[shapeKeys[i]].enabled;
+          }
+          if (row[labelKey] !== undefined) {
+            shapeLegendItems[shapeKeys[i]].label = row[labelKey];
+            shapeLabelEls[i].value = row[labelKey];
+          }
+        });
       } else if (row.RuleType && (row.RuleType.toLowerCase() === 'entity' || row.RuleType.toLowerCase() === 'category')) {
         // Load conditional format rule
         const targets = row.Targets ? row.Targets.split('|').map(t => t.trim()).filter(t => t) : [];
@@ -3023,7 +3401,9 @@ function loadFormatRule(ruleIdentifier) {
           nodeSize: parsedNodeSize,
           lineEnabled: lineEnabled,
           lineColor: row.LineColor || null,
-          lineThickness: row.LineThickness ? parseFloat(row.LineThickness) : null
+          lineThickness: row.LineThickness ? parseFloat(row.LineThickness) : null,
+          shapeEnabled: row.ShapeEnabled ? String(row.ShapeEnabled).toLowerCase() === 'true' : false,
+          nodeShape: row.NodeShape || null
         });
       }
     });
@@ -3042,6 +3422,8 @@ function loadFormatRule(ruleIdentifier) {
     // Update category colors and legend with the loaded color values
     updateCategoryColors();
     updateLegend();
+    updateShapeLegend();
+    schedulePhysicsRestart();
   }
 
   function showStatus(msg, type = 'success') {
@@ -3104,6 +3486,15 @@ function loadFormatRule(ruleIdentifier) {
     nodes = entitiesData.map((d, i) => createNodeFromData(d, i));
     nodeById = new Map(nodes.map(n => [n.id, n]));
 
+    // Detect if Size column exists in Entities.csv
+    hasSizeColumn = entitiesData.length > 0 && 'Size' in entitiesData[0];
+    csvSizeOption.style.display = hasSizeColumn ? '' : 'none';
+    // If csv mode was set but no Size column, fall back
+    if (formattingSettings.nodeSizeMode === 'csv' && !hasSizeColumn) {
+      formattingSettings.nodeSizeMode = 'custom';
+      fmtSizeMode.value = 'custom';
+    }
+
     // Create links
     processLinksData(connectionsData);
 
@@ -3127,6 +3518,13 @@ function loadFormatRule(ruleIdentifier) {
 
     // Start physics
     updatePhysics();
+    
+    // Safety: re-run physics after legend fully paints
+    setTimeout(() => {
+      if (legendEnabled && uniqueCategories.length > 0) {
+        updatePhysics();
+      }
+    }, 150);
 
     loadingOverlay.style.display = 'none';
   }
@@ -3171,6 +3569,12 @@ function loadFormatRule(ruleIdentifier) {
       }
     });
 
+    // Re-check if Size column exists after appending
+    if (entitiesData.length > 0 && 'Size' in entitiesData[0]) {
+      hasSizeColumn = true;
+    }
+    csvSizeOption.style.display = hasSizeColumn ? '' : 'none';
+
     // Process links
     processLinksData(connectionsData);
 
@@ -3192,8 +3596,15 @@ function loadFormatRule(ruleIdentifier) {
     updateCategoryColors();
     updateLegend();
 
-    // Restart physics
+    // Restart physics (legend padding measured synchronously)
     updatePhysics();
+    
+    // Safety: re-run physics after legend fully paints to ensure correct padding
+    setTimeout(() => {
+      if (legendEnabled && uniqueCategories.length > 0) {
+        updatePhysics();
+      }
+    }, 150);
 
     loadingOverlay.style.display = 'none';
   }
@@ -3330,7 +3741,46 @@ function loadFormatRule(ruleIdentifier) {
     const minSize = formattingSettings.minNodeSize;
     const maxSize = formattingSettings.maxNodeSize;
     
-    if (formattingSettings.nodeSizeMode === 'custom') {
+    if (formattingSettings.nodeSizeMode === 'csv' && hasSizeColumn) {
+      // Size nodes based on the 'Size' column in Entities.csv
+      const CSV_MIN = 10;
+      const CSV_MAX = 100;
+      const scale = formattingSettings.csvSizeScale;
+      
+      // Parse size value, stripping commas/spaces from formatted numbers
+      const parseSizeVal = (raw) => {
+        if (raw == null) return NaN;
+        return parseFloat(String(raw).replace(/[, ]/g, ''));
+      };
+      
+      // Gather all numeric Size values
+      const sizeValues = [];
+      nodes.forEach(n => {
+        const val = parseSizeVal(n.raw && n.raw['Size']);
+        if (!isNaN(val)) sizeValues.push(val);
+      });
+      
+      const dataMin = sizeValues.length > 0 ? Math.min(...sizeValues) : 0;
+      const dataMax = sizeValues.length > 0 ? Math.max(...sizeValues) : 1;
+      const dataRange = dataMax - dataMin;
+      
+      nodes.forEach(n => {
+        const val = parseSizeVal(n.raw && n.raw['Size']);
+        let size;
+        if (!isNaN(val) && dataRange > 0) {
+          const normalized = (val - dataMin) / dataRange;
+          size = (CSV_MIN + normalized * (CSV_MAX - CSV_MIN)) * scale;
+        } else if (!isNaN(val)) {
+          // All values are the same
+          size = ((CSV_MIN + CSV_MAX) / 2) * scale;
+        } else {
+          // No Size value for this node — use minimum
+          size = CSV_MIN * scale;
+        }
+        // Clamp with min/max size sliders
+        n.baseR = Math.max(minSize, Math.min(size, maxSize));
+      });
+    } else if (formattingSettings.nodeSizeMode === 'custom') {
       // Use custom size for all nodes
       const customSize = formattingSettings.customNodeSize;
       nodes.forEach(n => {
@@ -3370,16 +3820,20 @@ function loadFormatRule(ruleIdentifier) {
   }
 
   function applyNodeSizeScale() {
+    const isCsvMode = formattingSettings.nodeSizeMode === 'csv' && hasSizeColumn;
     nodes.forEach(n => {
-      // Check if this node has a conditional format with custom nodeSize AND size is enabled
-      const format = getNodeFormat(n);
-      if (format?.sizeEnabled && format?.nodeSize) {
-        // Use conditional format size
-        n.r = format.nodeSize;
-      } else {
-        // Use base size
-        n.r = n.baseR || 15;
+      // In CSV size mode, CSV sizes take precedence over conditional format sizes
+      if (!isCsvMode) {
+        // Check if this node has a conditional format with custom nodeSize AND size is enabled
+        const format = getNodeFormat(n);
+        if (format?.sizeEnabled && format?.nodeSize) {
+          // Use conditional format size
+          n.r = format.nodeSize;
+          return;
+        }
       }
+      // Use base size (set by updateNodeSizes)
+      n.r = n.baseR || 15;
     });
   }
 
@@ -3554,14 +4008,15 @@ function loadFormatRule(ruleIdentifier) {
       .force('charge', d3.forceManyBody().strength(CONFIG.force.chargeStrength))
       .force('center', d3.forceCenter(
         (canvas.width/devicePixelRatio)/2, 
-        (canvas.height/devicePixelRatio)/2
+        (canvas.height/devicePixelRatio)/2 + (getLegendPadding() / 2)
       ))
       .force('collision', d3.forceCollide().radius(d => d.r + CONFIG.force.collisionPadding))
       .velocityDecay(CONFIG.force.velocityDecay)
       .on('tick', () => {
+        const lp = getLegendPadding();
         visibleNodes.forEach(n => {
           n.x = Math.max(n.r + PADDING, Math.min((canvas.width/devicePixelRatio) - n.r - PADDING, n.x));
-          n.y = Math.max(n.r + PADDING, Math.min((canvas.height/devicePixelRatio) - n.r - PADDING, n.y));
+          n.y = Math.max(n.r + PADDING + lp, Math.min((canvas.height/devicePixelRatio) - n.r - PADDING, n.y));
           
           // Save unfixed positions
           if (!n.isFixed) {
@@ -3665,13 +4120,26 @@ function loadFormatRule(ruleIdentifier) {
       'CustomNodeSize': formattingSettings.customNodeSize,
       'MinNodeSize': formattingSettings.minNodeSize,
       'MaxNodeSize': formattingSettings.maxNodeSize,
+      'CsvSizeScale': formattingSettings.csvSizeScale,
       'LineEnabled': '', // Empty for default, but needed for CSV header
       'LineColor': formattingSettings.lineColor,
       'LineHoverColor': formattingSettings.lineHoverColor,
       'LineThickness': formattingSettings.lineThickness,
       'LineHoverThickness': formattingSettings.lineHoverThickness,
       'BackgroundColor': formattingSettings.backgroundColor,
-      'LegendEnabled': legendEnabled ? 'true' : 'false'
+      'LegendEnabled': legendEnabled ? 'true' : 'false',
+      'DefaultShape': formattingSettings.defaultShape,
+      'ShapeLegendEnabled': shapeLegendEnabled ? 'true' : 'false',
+      'ShapeLegendCircleEnabled': shapeLegendItems.circle.enabled ? 'true' : 'false',
+      'ShapeLegendCircleLabel': shapeLegendItems.circle.label,
+      'ShapeLegendSquareEnabled': shapeLegendItems.square.enabled ? 'true' : 'false',
+      'ShapeLegendSquareLabel': shapeLegendItems.square.label,
+      'ShapeLegendTriangleEnabled': shapeLegendItems.triangle.enabled ? 'true' : 'false',
+      'ShapeLegendTriangleLabel': shapeLegendItems.triangle.label,
+      'ShapeLegendDiamondEnabled': shapeLegendItems.diamond.enabled ? 'true' : 'false',
+      'ShapeLegendDiamondLabel': shapeLegendItems.diamond.label,
+      'ShapeEnabled': '',
+      'NodeShape': ''
     };
     
     // Add legend colors
@@ -3700,13 +4168,26 @@ function loadFormatRule(ruleIdentifier) {
         'NodeSize': rule.nodeSize || '',
         'SizeMode': '',
         'CustomNodeSize': '',
+        'CsvSizeScale': '',
         'LineEnabled': rule.lineEnabled ? 'true' : 'false',
         'LineColor': rule.lineColor || '',
         'LineHoverColor': '',
         'LineThickness': rule.lineThickness || '',
         'LineHoverThickness': '',
         'BackgroundColor': '',
-        'LegendEnabled': ''
+        'LegendEnabled': '',
+        'DefaultShape': '',
+        'ShapeLegendEnabled': '',
+        'ShapeLegendCircleEnabled': '',
+        'ShapeLegendCircleLabel': '',
+        'ShapeLegendSquareEnabled': '',
+        'ShapeLegendSquareLabel': '',
+        'ShapeLegendTriangleEnabled': '',
+        'ShapeLegendTriangleLabel': '',
+        'ShapeLegendDiamondEnabled': '',
+        'ShapeLegendDiamondLabel': '',
+        'ShapeEnabled': rule.shapeEnabled ? 'true' : 'false',
+        'NodeShape': rule.nodeShape || ''
       };
       
       // Add empty legend color columns for consistency
@@ -4118,6 +4599,9 @@ function loadFormatRule(ruleIdentifier) {
     const isHovered = hoveredNode && n === hoveredNode;
     const isSelected = selectedNode && n === selectedNode;
     
+    // Get node shape
+    const shape = getNodeShape(n);
+    
     // Use hover colors/thickness if node is hovered OR selected
     // Only use conditional format if the respective section is enabled
     const nodeColor = isHovered ? formattingSettings.nodeHoverColor : (format?.nodeEnabled && format?.nodeColor ? format.nodeColor : formattingSettings.nodeColor);
@@ -4131,7 +4615,8 @@ function loadFormatRule(ruleIdentifier) {
       ctx.save();
       ctx.globalAlpha = opacity;
       ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
+      // Clip to shape
+      drawShapePath(ctx, shape, x, y, r);
       ctx.clip();
       const img = n.imageBitmap;
       const iw = img.width || img.naturalWidth || 1;
@@ -4147,8 +4632,7 @@ function loadFormatRule(ruleIdentifier) {
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, dx, dy, dw, dh);
       } catch (e) {
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI*2);
+        drawShapePath(ctx, shape, x, y, r);
         ctx.fillStyle = nodeColor;
         ctx.fill();
       }
@@ -4156,8 +4640,7 @@ function loadFormatRule(ruleIdentifier) {
     } else {
       ctx.save();
       ctx.globalAlpha = opacity;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
+      drawShapePath(ctx, shape, x, y, r);
       ctx.fillStyle = nodeColor;
       ctx.fill();
       ctx.restore();
@@ -4183,8 +4666,7 @@ function loadFormatRule(ruleIdentifier) {
       ctx.shadowBlur = glowSize;
     }
     
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI*2);
+    drawShapePath(ctx, shape, x, y, r);
     ctx.lineWidth = outlineThickness / zoomLevel;
     ctx.strokeStyle = outlineColor;
     ctx.stroke();
@@ -4249,9 +4731,10 @@ function loadFormatRule(ruleIdentifier) {
       // Check if node should be highlighted based on selection AND legend filtering
       let shouldHighlight = shouldHighlightNode(node);
       
-      // If legend is enabled and category is inactive, force unhighlighted (low opacity)
-      if (legendEnabled && node.raw && node.raw['Category']) {
-        if (!activeCategories.has(node.raw['Category'])) {
+      // If legend is enabled and a specific category filter is active, dim non-matching nodes
+      if (legendEnabled && activeCategories.size < uniqueCategories.length) {
+        const nodeCats = getNodeCategories(node);
+        if (nodeCats.length === 0 || !nodeCats.some(c => activeCategories.has(c))) {
           shouldHighlight = false;
         }
       }
@@ -4271,8 +4754,10 @@ function loadFormatRule(ruleIdentifier) {
     // Helper function to check if a node's category is active
     const isNodeCategoryActive = (node) => {
       if (!legendEnabled) return true;
-      if (!node.raw || !node.raw['Category']) return true;
-      return activeCategories.has(node.raw['Category']);
+      if (activeCategories.size === uniqueCategories.length) return true;
+      const nodeCats = getNodeCategories(node);
+      if (nodeCats.length === 0) return false;
+      return nodeCats.some(c => activeCategories.has(c));
     };
     
     if (selectedNode) {
