@@ -1604,6 +1604,9 @@
     // Load images
     loadAllImages();
 
+    // Preload all story mode view images immediately
+    preloadStoryImages();
+
     // Start physics
     updatePhysics();
 
@@ -2324,6 +2327,21 @@
           node.imageBitmap = null;
           resolve();
         }
+      }
+    });
+  }
+
+  /************************************************************************
+   * PRELOAD STORY MODE VIEW IMAGES
+   ************************************************************************/
+  const storyImageCache = new Map();
+
+  function preloadStoryImages() {
+    viewsData.forEach(v => {
+      if (v.image && !storyImageCache.has(v.image)) {
+        const img = new Image();
+        img.src = v.image;
+        storyImageCache.set(v.image, img);
       }
     });
   }
