@@ -2,5 +2,4 @@ RuleType,RuleName,Order,Targets,NodeEnabled,NodeColor,NodeHoverColor,OutlineEnab
 Default,,,,,#000000,#FFD241,,#FFFFFF,#FFD241,4,5,,,custom,30,5,80,1,,#000000,#FFD241,3,5,#FFFFFF,TRUE,circle,FALSE,TRUE,,TRUE,,FALSE,,FALSE,,,,#000000,#000000,#000000,#000000,#000000,#000000,#000000,#000000,#000000,#000001,#000002,#000003
 Entity,Little,0,Second Street|Montreal Economic Institute|Macdonald-Laurier Institute|Justice Centre for Constitutional Freedom|Institute for Liberal Studies|Frontier Centre for Public Policy|Fraser Institute|Canadian Constitution Foundation|Gwyn Morgan and Patricia Trottier Foundation|Energy Probe/Lawrence Solomon|Canada Proud/Jeff Ballingall|Canada Strong and Proud|Friends of Free Enterprise In Canada,FALSE,#000000,,FALSE,#FFFFFF,,4,,TRUE,19,,,,,,FALSE,#000000,,3,,,,,,,,,,,,,,FALSE,,,,,,,,,,,,,
 Entity,Gwyn,1,Gwyn Morgan,FALSE,#000000,,FALSE,#FFFFFF,,4,,TRUE,64,,,,,,FALSE,#000000,,3,,,,,,,,,,,,,,FALSE,,,,,,,,,,,,,
-
 Entity,Medium Big,2,Atlas Network|Canada Strong and Free Network|Conservative Party/Pierre Poilievre,FALSE,#000000,,FALSE,#FFFFFF,,4,,TRUE,44,,,,,,FALSE,#000000,,3,,,,,,,,,,,,,,FALSE,,,,,,,,,,,,,
