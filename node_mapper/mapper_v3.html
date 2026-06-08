@@ -960,10 +960,9 @@
      * GOOGLE SHEETS CSV LINKS — paste your published CSV URLs here
      * (File → Share → Publish to web → select sheet → CSV → Publish)
      *──────────────────────────────────────────────────────────────*/
-    entitiesUrl:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSTwa1o5wokmtTZBpaBG_xPe61aRQgCl_bozg2nHd187dOkk9Nfn5WNskLeGd8tliPjT127SnjA2-iC/pub?gid=280348999&single=true&output=csv',  // REQUIRED
-    connectionsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSTwa1o5wokmtTZBpaBG_xPe61aRQgCl_bozg2nHd187dOkk9Nfn5WNskLeGd8tliPjT127SnjA2-iC/pub?gid=675963268&single=true&output=csv',  // REQUIRED
-    formattingUrl:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vSTwa1o5wokmtTZBpaBG_xPe61aRQgCl_bozg2nHd187dOkk9Nfn5WNskLeGd8tliPjT127SnjA2-iC/pub?gid=157974746&single=true&output=csv',  // optional
-    viewsUrl:       'https://docs.google.com/spreadsheets/d/e/2PACX-1vSTwa1o5wokmtTZBpaBG_xPe61aRQgCl_bozg2nHd187dOkk9Nfn5WNskLeGd8tliPjT127SnjA2-iC/pub?gid=1780043924&single=true&output=csv',  // optional
+    entitiesUrl:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjOiYDBj-gr1jK1bz45eAu14zfoaCHt897e3_8Jd2eVsNPIep0TNJuTRkT7mFWRXxCCEc1ahyN48Zi/pub?gid=0&single=true&output=csv',  // REQUIRED
+    connectionsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjOiYDBj-gr1jK1bz45eAu14zfoaCHt897e3_8Jd2eVsNPIep0TNJuTRkT7mFWRXxCCEc1ahyN48Zi/pub?gid=1264353166&single=true&output=csv',  // REQUIRED
+    viewsUrl:       'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjOiYDBj-gr1jK1bz45eAu14zfoaCHt897e3_8Jd2eVsNPIep0TNJuTRkT7mFWRXxCCEc1ahyN48Zi/pub?gid=1739742541&single=true&output=csv',  // optional
   };
 
   const PADDING = 80;
@@ -981,7 +980,7 @@
     lineThickness: 3,
     backgroundColor: '#FFFFFF',
     // Sizing
-    nodeSizeMode: 'connections', // 'custom','connections','connectionsOutTotal','connectionsInTotal'
+    nodeSizeMode: 'custom', // 'custom','connections','connectionsOutTotal','connectionsInTotal'
     lineSizeMode: 'fixed', // 'fixed','connectionValue'
     nodeSize: 30,
     minNodeSize: 10,
@@ -994,16 +993,16 @@
     paddingStrength: 'Moderately',
     // Info Panel
     infoPanelOn: true,
-    showColorLegendCategoryName: true,
+    showColorLegendCategoryName: false,
     colorLegendCategoryTitle: 'Category',
     showShapeLegendCategoryName: false,
     shapeLegendCategoryTitle: '',
-    showTotalInValue: true,
+    showTotalInValue: false,
     totalInTitle: 'Total Received',
-    showTotalOutValue: true,
+    showTotalOutValue: false,
     totalOutTitle: 'Total Donated',
     showConnectionsBoxTitle: true,
-    connectionsBoxTitle: 'Connections',
+    connectionsBoxTitle: 'Connections:',
     // Labels
     showNodeLabels: 'hover', // 'hover' or 'always'
     showConnectionLabels: 'hover', // 'hover' or 'never'
@@ -1019,7 +1018,7 @@
     backgroundImageEnabled: false,
     backgroundImageUrl: '',
     // Sharing
-    sharingEnabled: true,
+    sharingEnabled: false,
     sharingUrl: ''
   };
 
@@ -4484,7 +4483,7 @@
   const optionsToggle = document.createElement('button');
   optionsToggle.id = 'options-toggle';
   optionsToggle.className = 'authoring-only';
-  optionsToggle.innerHTML = '⚙ Options';
+  optionsToggle.innerHTML = '≡ Options';
   document.body.appendChild(optionsToggle);
 
   optionsToggle.addEventListener('click', () => {
