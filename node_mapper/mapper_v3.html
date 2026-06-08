@@ -972,14 +972,14 @@
   let formattingSettings = {
     // Colors
     nodeColor: '#000000',
-    nodeHoverColor: '#FFD241',
-    outlineColor: '#E3E3E3',
-    outlineHoverColor: '#FFD241',
+    nodeHoverColor: '#f1bb0e',
+    outlineColor: '#FFFFFF',
+    outlineHoverColor: '#f1bb0e',
     outlineThickness: 4,
     lineColor: '#000000',
-    lineHoverColor: '#FFD241',
+    lineHoverColor: '#f1bb0e',
     lineThickness: 3,
-    backgroundColor: '#E3E3E3',
+    backgroundColor: '#FFFFFF',
     // Sizing
     nodeSizeMode: 'connections', // 'custom','connections','connectionsOutTotal','connectionsInTotal'
     lineSizeMode: 'fixed', // 'fixed','connectionValue'
@@ -1365,11 +1365,11 @@
       // linkStrength: how rigidly connected nodes pull together (0-1)
       attract:      { 'Barely at all': 0.05, 'A bit': 0.15, 'Moderately': 0.3,  'A lot': 0.5,  'Strongly': 0.7 },
       // linkDistance: target distance in px between connected nodes
-      linkDistance:  { 'Barely at all': 300,  'A bit': 250,  'Moderately': 180,   'A lot': 140,  'Strongly': 100 },
+      linkDistance:  { 'Barely at all': 800,  'A bit': 650,  'Moderately': 500,   'A lot': 300,  'Strongly': 150 },
       // chargeStrength: repulsion between ALL node pairs (negative = repel)
       repel:        { 'Barely at all': -50,   'A bit': -150, 'Moderately': -300,  'A lot': -600, 'Strongly': -1000 },
       // collisionPadding: extra px around node radius for collision avoidance
-      padding:      { 'Barely at all': 5,     'A bit': 10,   'Moderately': 20,    'A lot': 35,   'Strongly': 50 }
+      padding:      { 'Barely at all': 10,     'A bit': 20,   'Moderately': 40,    'A lot': 80,   'Strongly': 160 }
     };
     return map[type]?.[label] ?? map[type]?.['Moderately'];
   }
@@ -2634,7 +2634,7 @@
    * RENDERING HELPERS
    ************************************************************************/
   function clearCanvas() {
-    const bgColor = formattingSettings.backgroundColor || '#E3E3E3';
+    const bgColor = formattingSettings.backgroundColor || '#FFFFFF';
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvas.width/(devicePixelRatio), canvas.height/(devicePixelRatio));
     
@@ -4502,7 +4502,7 @@
 
   /* ---------- apply settings live ---------- */
   function applyAndRender(restartPhysics) {
-    document.documentElement.style.setProperty('--white', formattingSettings.backgroundColor || '#E3E3E3');
+    document.documentElement.style.setProperty('--white', formattingSettings.backgroundColor || '#FFFFFF');
     rebuildShapeCategoryMap();
     CONFIG.force.linkStrength = getForceValue(formattingSettings.attractStrength, 'attract');
     CONFIG.force.linkDistance = getForceValue(formattingSettings.attractStrength, 'linkDistance');
