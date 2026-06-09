@@ -72,7 +72,7 @@
       border: 0px solid var(--panel-grey);
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      z-index: 100;
+      z-index: 102;
       transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
     }
 
@@ -91,15 +91,14 @@
       padding: 2px 5px;
       border-radius: 4px;
       cursor: pointer;
-      transition: all 0.2s;
-      font-size: 11px;
+      transition: box-shadow 0.2s ease, opacity 0.2s ease;
+      font-size: 12px;
       font-weight: 500;
       user-select: none;
       line-height: 1.2;
     }
 
     .legend-item:hover {
-      transform: translateY(-1px);
       box-shadow: 0 1px 4px rgba(0,0,0,0.15);
     }
 
@@ -143,14 +142,14 @@
       gap: 3px;
       padding: 2px 5px;
       border-radius: 4px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       user-select: none;
       line-height: 1.2;
     }
 
     .shape-legend-icon {
-      font-size: 10px;
+      font-size: 18px;
       flex-shrink: 0;
       line-height: 1;
     }
@@ -865,7 +864,7 @@
           <button id="zoom-out" class="zoom-btn" title="Zoom Out">–</button>
           <button id="zoom-reset" class="zoom-btn" title="Reset Zoom">⛶</button>
           <button id="fullscreen-btn" title="Toggle Fullscreen">⌜⌟</button>
-          <button id="share-btn" title="Copy Link" style="display:none;">🔗</button>
+          <button id="share-btn" title="Copy Link" style="display:none;">➤</button>
         </div>
       </div>
 
@@ -932,7 +931,6 @@
    * CONFIG
    ************************************************************************/
   const CONFIG = {
-    colorPalette: d3.schemeTableau10,
     pointOpacity: 1.0,
     unconnectedOpacity: 0.15,
     linkOpacityNoSelection: 0.8,
@@ -982,7 +980,7 @@
     // Sizing
     nodeSizeMode: 'custom', // 'custom','connections','connectionsOutTotal','connectionsInTotal'
     lineSizeMode: 'fixed', // 'fixed','connectionValue'
-    nodeSize: 30,
+    nodeSize: 50,
     minNodeSize: 10,
     maxNodeSize: 100,
     sizeScale: 1.0,
@@ -1006,6 +1004,8 @@
     // Labels
     showNodeLabels: 'hover', // 'hover' or 'always'
     showConnectionLabels: 'hover', // 'hover' or 'never'
+    nodeLabelSize: 14,       
+    connectionLabelSize: 14,
     connectionValuePrefix: '$',
     // Title
     chartTitleEnabled: false,
@@ -1054,6 +1054,7 @@
   let uniqueCategories = [];
   let categoryColorMap = new Map();
   let activeCategories = new Set();
+  let colorFilterActive = false;
 
   // Shape Legend State
   let shapeLegendEntries = []; // [{enabled, label, shape}] from Options CSV
@@ -1117,7 +1118,6 @@
   const clearBtn = document.getElementById('clear-btn');
   const suggestionsEl = d3.select('#suggestions');
   const nodeTitleEl = d3.select('#node-title');
-  // const nodeMetaEl = d3.select('#node-meta');
   const nodeLinkEl = d3.select('#node-links');
   const connectionsBox = document.getElementById('connections-box');
   const msgEl = d3.select('#msg');
@@ -1293,8 +1293,6 @@
     } 
     render();
   });
-  
-  resizeCanvas();
 
   /************************************************************************
    * NODE SIZING
@@ -1362,13 +1360,13 @@
     const label = (strengthLabel || 'Moderately').trim();
     const map = {
       // linkStrength: how rigidly connected nodes pull together (0-1)
-      attract:      { 'Barely at all': 0.05, 'A bit': 0.15, 'Moderately': 0.3,  'A lot': 0.5,  'Strongly': 0.7 },
+      attract:      { 'Barely at all': 0.25, 'A bit': 0.36, 'Moderately': 0.45,  'A lot': 0.6,  'Strongly': 0.75 },
       // linkDistance: target distance in px between connected nodes
       linkDistance:  { 'Barely at all': 800,  'A bit': 650,  'Moderately': 500,   'A lot': 300,  'Strongly': 150 },
       // chargeStrength: repulsion between ALL node pairs (negative = repel)
       repel:        { 'Barely at all': -50,   'A bit': -150, 'Moderately': -300,  'A lot': -600, 'Strongly': -1000 },
       // collisionPadding: extra px around node radius for collision avoidance
-      padding:      { 'Barely at all': 10,     'A bit': 20,   'Moderately': 40,    'A lot': 80,   'Strongly': 160 }
+      padding:      { 'Barely at all': 7.5,     'A bit': 15,   'Moderately': 30,    'A lot': 60,   'Strongly': 90 }
     };
     return map[type]?.[label] ?? map[type]?.['Moderately'];
   }
@@ -1432,6 +1430,88 @@
     }
   }
 
+  /************************************************************************
+   * REFRESH DATA
+   * Re-fetches the live Google Sheets and rebuilds the chart so it matches
+   * the current data: removed entities/connections disappear, new ones
+   * appear. Saved node positions for entities that no longer exist are
+   * pruned so the exported/saved file stays clean.
+   ************************************************************************/
+  async function refreshData() {
+    if (!CONFIG.entitiesUrl || !CONFIG.connectionsUrl) {
+      alert('No data source is connected. Use “New / Load” to connect a chart first.');
+      return;
+    }
+
+    loadingOverlay.style.display = 'flex';
+    loadingText.textContent = 'Refreshing data…';
+
+    // Append a cache-buster so the browser doesn't hand back a stale copy of
+    // the published CSV (Google caches these aggressively).
+    const bust = (url) => url + (url.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now();
+
+    try {
+      const [entitiesResponse, connectionsResponse] = await Promise.all([
+        fetch(bust(CONFIG.entitiesUrl)),
+        fetch(bust(CONFIG.connectionsUrl))
+      ]);
+
+      if (!entitiesResponse.ok || !connectionsResponse.ok) {
+        throw new Error('Could not load the Entities and Connections sheets.');
+      }
+
+      const entitiesText = await entitiesResponse.text();
+      const connectionsText = await connectionsResponse.text();
+
+      const entitiesData = Papa.parse(entitiesText, { header: true, skipEmptyLines: true }).data;
+      const connectionsData = Papa.parse(connectionsText, { header: true, skipEmptyLines: true }).data;
+
+      // Refresh views too, so removed/added views are also reflected. Clear
+      // first so a now-empty or unreachable views sheet doesn't keep stale ones.
+      viewsData = [];
+      viewsById.clear();
+      sortedViewIds = [];
+      currentViewIndex = 0;
+      if (CONFIG.viewsUrl) {
+        try {
+          const viewsResponse = await fetch(bust(CONFIG.viewsUrl));
+          if (viewsResponse.ok) {
+            const viewsText = await viewsResponse.text();
+            const viewsDataParsed = Papa.parse(viewsText, { header: true, skipEmptyLines: true }).data;
+            parseViewsData(viewsDataParsed);
+          }
+        } catch (e) {
+          // Views sheet is optional, ignore errors
+        }
+      }
+
+      // Rebuild the whole session from the fresh data. Nodes that the user
+      // positioned (grid coords stored in savedPositions) keep their spot;
+      // brand-new entities are placed by physics.
+      loadSession(entitiesData, connectionsData);
+
+      // CLEAN THE SAVED DATA: drop saved positions for entities that no longer
+      // exist, so a subsequent "Export saved HTML" reflects only current data.
+      const liveNames = new Set(nodes.map(n => n.name));
+      Array.from(savedPositions.keys()).forEach(k => {
+        if (!liveNames.has(k)) savedPositions.delete(k);
+      });
+
+      // A previously-selected/hovered node may have been removed.
+      if (selectedNode && !liveNames.has(selectedNode.name)) {
+        selectedNode = null;
+        if (!isStoryMode) clearInfoPanel();
+      }
+      hoveredNode = null;
+      hoveredConnection = null;
+
+      render();
+    } catch (err) {
+      loadingText.textContent = 'Refresh failed: ' + err.message;
+      setTimeout(() => { loadingOverlay.style.display = 'none'; }, 3000);
+    }
+  }
+
   function parseViewsData(data) {
     if (!data || data.length === 0) return;
     
@@ -1467,226 +1547,6 @@
       }
       return a.localeCompare(b);
     });
-  }
-
-  function loadFormattingData(data) {
-    if (!data || data.length === 0) return;
-    
-    // Clean headers
-    data.forEach(r => { 
-      Object.keys(r).forEach(k => { 
-        if (k !== k.trim()) { 
-          r[k.trim()] = r[k]; 
-          delete r[k]; 
-        } 
-      }); 
-    });
-    
-    // Build a lookup by Rule name, tracking current Category for blank-category rows
-    const ruleMap = new Map();
-    let currentCategory = '';
-    data.forEach(row => {
-      const cat = (row['Category'] || '').trim();
-      const rule = (row['Rule'] || '').trim();
-      if (cat) currentCategory = cat;
-      if (!rule) return; // skip header/blank rows
-      ruleMap.set(rule, {
-        category: currentCategory,
-        opt1: (row['Option 1'] || '').trim(),
-        opt2: (row['Option 2'] || '').trim(),
-        opt3: (row['Option 3'] || '').trim()
-      });
-    });
-    
-    const get = (rule) => ruleMap.get(rule);
-    const toBool = (v) => String(v).toUpperCase() === 'TRUE';
-    const toFloat = (v) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
-    
-    // --- Auto-Size ---
-    const nodeSizeMode = get('Node Size Mode');
-    if (nodeSizeMode) {
-      const modeStr = nodeSizeMode.opt1.toLowerCase();
-      if (modeStr === '# of connections') formattingSettings.nodeSizeMode = 'connections';
-      else if (modeStr === 'fixed size') formattingSettings.nodeSizeMode = 'custom';
-      else if (modeStr === 'connections out total') formattingSettings.nodeSizeMode = 'connectionsOutTotal';
-      else if (modeStr === 'connections in total') formattingSettings.nodeSizeMode = 'connectionsInTotal';
-    }
-    const lineSizeMode = get('Line Size Mode');
-    if (lineSizeMode) {
-      const modeStr = lineSizeMode.opt1.toLowerCase();
-      if (modeStr === 'fixed size') formattingSettings.lineSizeMode = 'fixed';
-      else if (modeStr === 'connection value') formattingSettings.lineSizeMode = 'connectionValue';
-    }
-    
-    // --- Auto-Position ---
-    const attract = get('Attract Connected Nodes');
-    if (attract) formattingSettings.attractStrength = attract.opt1 || 'Moderately';
-    const repel = get('Repel Unconnected Nodes');
-    if (repel) formattingSettings.repelStrength = repel.opt1 || 'Moderately';
-    const padding = get('Repel All Nodes (Padding)');
-    if (padding) formattingSettings.paddingStrength = padding.opt1 || 'Moderately';
-    
-    // --- Sizing ---
-    const fixedNodeSize = get('Fixed Node Size');
-    if (fixedNodeSize) {
-      const v = toFloat(fixedNodeSize.opt1);
-      if (v !== null) formattingSettings.nodeSize = v;
-    }
-    const minNodeSize = get('Min Node Size');
-    if (minNodeSize) {
-      const v = toFloat(minNodeSize.opt1);
-      if (v !== null) formattingSettings.minNodeSize = v;
-    }
-    const maxNodeSize = get('Max Node Size');
-    if (maxNodeSize) {
-      const v = toFloat(maxNodeSize.opt1);
-      if (v !== null) formattingSettings.maxNodeSize = v;
-    }
-    const scaleNodeSize = get('Scale Node Size');
-    if (scaleNodeSize) {
-      const v = toFloat(scaleNodeSize.opt1);
-      if (v !== null) formattingSettings.sizeScale = v;
-    }
-    const lineThickness = get('Line Thickness');
-    if (lineThickness) {
-      const v = toFloat(lineThickness.opt1);
-      if (v !== null) formattingSettings.lineThickness = v;
-    }
-    const outlineThickness = get('Node Outline Thickness');
-    if (outlineThickness) {
-      const v = toFloat(outlineThickness.opt1);
-      if (v !== null) formattingSettings.outlineThickness = v;
-    }
-    
-    // --- Color ---
-    const nodeColor = get('Node Color');
-    if (nodeColor) {
-      if (nodeColor.opt1 && nodeColor.opt1.startsWith('#')) formattingSettings.nodeColor = nodeColor.opt1;
-      if (nodeColor.opt2 && nodeColor.opt2.startsWith('#')) formattingSettings.nodeHoverColor = nodeColor.opt2;
-    }
-    const outlineColor = get('Node Outline Color');
-    if (outlineColor) {
-      if (outlineColor.opt1 && outlineColor.opt1.startsWith('#')) formattingSettings.outlineColor = outlineColor.opt1;
-      if (outlineColor.opt2 && outlineColor.opt2.startsWith('#')) formattingSettings.outlineHoverColor = outlineColor.opt2;
-    }
-    const lineColorSetting = get('Line Color');
-    if (lineColorSetting) {
-      if (lineColorSetting.opt1 && lineColorSetting.opt1.startsWith('#')) formattingSettings.lineColor = lineColorSetting.opt1;
-      if (lineColorSetting.opt2 && lineColorSetting.opt2.startsWith('#')) formattingSettings.lineHoverColor = lineColorSetting.opt2;
-    }
-    const bgColor = get('Chart Background Color');
-    if (bgColor && bgColor.opt1 && bgColor.opt1.startsWith('#')) {
-      formattingSettings.backgroundColor = bgColor.opt1;
-      document.documentElement.style.setProperty('--white', bgColor.opt1);
-    }
-    
-    // --- Info Panel ---
-    const infoPanelOn = get('Info Panel On');
-    if (infoPanelOn) formattingSettings.infoPanelOn = toBool(infoPanelOn.opt1);
-    const showColorCat = get('Show Color Legend Category Name');
-    if (showColorCat) {
-      formattingSettings.showColorLegendCategoryName = toBool(showColorCat.opt1);
-      if (showColorCat.opt2) formattingSettings.colorLegendCategoryTitle = showColorCat.opt2;
-    }
-    const showShapeCat = get('Show Shape Legend Category Name');
-    if (showShapeCat) {
-      formattingSettings.showShapeLegendCategoryName = toBool(showShapeCat.opt1);
-      if (showShapeCat.opt2) formattingSettings.shapeLegendCategoryTitle = showShapeCat.opt2;
-    }
-    const showTotalIn = get('Show Total IN Connection Value');
-    if (showTotalIn) {
-      formattingSettings.showTotalInValue = toBool(showTotalIn.opt1);
-      if (showTotalIn.opt2) formattingSettings.totalInTitle = showTotalIn.opt2;
-    }
-    const showTotalOut = get('Show Total OUT Connection Value');
-    if (showTotalOut) {
-      formattingSettings.showTotalOutValue = toBool(showTotalOut.opt1);
-      if (showTotalOut.opt2) formattingSettings.totalOutTitle = showTotalOut.opt2;
-    }
-    const showConnTitle = get('Show Connections Box Title');
-    if (showConnTitle) {
-      formattingSettings.showConnectionsBoxTitle = toBool(showConnTitle.opt1);
-      if (showConnTitle.opt2) formattingSettings.connectionsBoxTitle = showConnTitle.opt2;
-    }
-    
-    // --- Labels ---
-    const showNodeLabels = get('Show Node Labels');
-    if (showNodeLabels) {
-      formattingSettings.showNodeLabels = showNodeLabels.opt1.toLowerCase().includes('always') ? 'always' : 'hover';
-    }
-    const showConnLabels = get('Show Connection Labels');
-    if (showConnLabels) {
-      const val = showConnLabels.opt1.toLowerCase();
-      if (val.includes('never')) formattingSettings.showConnectionLabels = 'never';
-      else if (val.includes('always')) formattingSettings.showConnectionLabels = 'always';
-      else formattingSettings.showConnectionLabels = 'hover';
-    }
-    const valuePrefix = get('Connection Value Prefix');
-    if (valuePrefix) formattingSettings.connectionValuePrefix = valuePrefix.opt1;
-    
-    // --- Color Legend ---
-    colorLegendEntries = [];
-    for (let i = 1; i <= 12; i++) {
-      const entry = get(`Color Legend - Value ${i}`);
-      if (entry) {
-        colorLegendEntries.push({
-          enabled: toBool(entry.opt1),
-          label: entry.opt2 || '',
-          color: entry.opt3 || ''
-        });
-      }
-    }
-    
-    // --- Shape Legend ---
-    shapeLegendEntries = [];
-    const shapeNames = ['Circle', 'Square', 'Diamond', 'Triangle'];
-    const shapeKeys = ['circle', 'square', 'diamond', 'triangle'];
-    shapeNames.forEach((name, i) => {
-      const entry = get(`Shape Legend - ${name}`);
-      if (entry) {
-        shapeLegendEntries.push({
-          enabled: toBool(entry.opt1),
-          label: entry.opt2 || '',
-          shape: shapeKeys[i]
-        });
-      }
-    });
-    // Build shape category map
-    shapeCategoryMap.clear();
-    shapeLegendEntries.forEach(e => {
-      if (e.enabled && e.label) shapeCategoryMap.set(e.label, e.shape);
-    });
-    
-    // --- Title ---
-    const chartTitle = get('Chart Title');
-    if (chartTitle) {
-      formattingSettings.chartTitleEnabled = toBool(chartTitle.opt1);
-      if (chartTitle.opt2) formattingSettings.chartTitle = chartTitle.opt2;
-    }
-    const chartSubtitle = get('Chart Subtitle');
-    if (chartSubtitle) {
-      formattingSettings.chartSubtitleEnabled = toBool(chartSubtitle.opt1);
-      if (chartSubtitle.opt2) formattingSettings.chartSubtitle = chartSubtitle.opt2;
-    }
-    
-    // --- Images ---
-    const logoImage = get('Chart Logo Image');
-    if (logoImage) {
-      formattingSettings.logoEnabled = toBool(logoImage.opt1);
-      if (logoImage.opt2) formattingSettings.logoUrl = logoImage.opt2;
-    }
-    const bgImage = get('Background Image');
-    if (bgImage) {
-      formattingSettings.backgroundImageEnabled = toBool(bgImage.opt1);
-      if (bgImage.opt2) formattingSettings.backgroundImageUrl = bgImage.opt2;
-    }
-    
-    // --- Sharing ---
-    const sharing = get('Show Sharing Option');
-    if (sharing) {
-      formattingSettings.sharingEnabled = toBool(sharing.opt1);
-      if (sharing.opt2) formattingSettings.sharingUrl = sharing.opt2;
-    }
   }
 
   /************************************************************************
@@ -1747,6 +1607,15 @@
     const gridCount = nodes.filter(n => n.hasGridCoords).length;
     const isStaticLayout = gridCount > nodes.length * 0.5;
 
+    // Show/hide the info panel BEFORE computing layout. The panel is a flex
+    // sibling of #graph-area, so it claims width on the right; if we lay out
+    // first, nodes get centered across the full window and end up hidden
+    // behind the panel. updateInfoPanelVisibility() flips display synchronously,
+    // and the synchronous resizeCanvas() that follows reads the (now narrower)
+    // graph-area width so computeGridLayout() centers into the visible space.
+    updateInfoPanelVisibility();
+    resizeCanvas();
+
     // Compute initial grid layout (positions grid nodes, scales radii)
     computeGridLayout();
 
@@ -1775,7 +1644,7 @@
     updateLogoFromSettings();
     updateTitleFromSettings();
     updateShareFromSettings();
-    updateInfoPanelVisibility();
+    // (info panel visibility already applied before the layout above)
 
     // Update legend after nodes are loaded
     updateCategoryColors();
@@ -2526,20 +2395,24 @@
 
   function loadImage(node) {
     return new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => {
-        node.imageBitmap = img;
+      // Request a CORS-clean image FIRST. Drawing a non-CORS image onto the
+      // canvas taints it and permanently blocks toDataURL()/PNG export, so we
+      // only fall back to a plain (tainting) load if the host refuses CORS.
+      const corsImg = new Image();
+      corsImg.crossOrigin = 'anonymous';
+      corsImg.onload = () => {
+        node.imageBitmap = corsImg;
         resolve();
       };
-      img.onerror = () => {
-        // Retry with crossOrigin for CORS-enabled servers
-        const img2 = new Image();
-        img2.crossOrigin = 'anonymous';
-        img2.onload = () => { node.imageBitmap = img2; resolve(); };
-        img2.onerror = () => { node.imageBitmap = null; resolve(); };
-        img2.src = node.image;
+      corsImg.onerror = () => {
+        // Host didn't allow cross-origin use. Load normally so the image still
+        // displays on screen (note: this taints the canvas, disabling PNG export).
+        const plainImg = new Image();
+        plainImg.onload = () => { node.imageBitmap = plainImg; resolve(); };
+        plainImg.onerror = () => { node.imageBitmap = null; resolve(); };
+        plainImg.src = node.image;
       };
-      img.src = node.image;
+      corsImg.src = node.image;
     });
   }
 
@@ -2692,7 +2565,7 @@
     
     // Text measurements - calculate first to know chevron size
     ctx.save();
-    const fontSize = 16 / zoomLevel;
+    const fontSize = (Number(formattingSettings.connectionLabelSize) || 12) / zoomLevel;
     ctx.font = `${fontSize}px Rubik, Arial, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -3079,15 +2952,16 @@
   function drawLabel(n) {
     const text = n.name || '';
     if (!text) return;
+    const labelFontSize = Number(formattingSettings.nodeLabelSize) || CONFIG.labelFontSize;
     ctx.save();
-    ctx.font = `${CONFIG.labelFontSize / zoomLevel}px Rubik, Arial, sans-serif`;
+    ctx.font = `${labelFontSize / zoomLevel}px Rubik, Arial, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const metrics = ctx.measureText(text);
     const textW = metrics.width;
     const pad = CONFIG.labelBoxPadding / zoomLevel;
     const boxW = textW + pad * 2;
-    const boxH = (CONFIG.labelFontSize + 6) / zoomLevel;
+    const boxH = (labelFontSize + 6) / zoomLevel;
     const x = n.x - boxW / 2;
     const y = n.y + n.r + CONFIG.labelOffsetY / zoomLevel;
 
@@ -3221,7 +3095,7 @@
     legendCategories.forEach(category => {
       const item = document.createElement('div');
       item.className = 'legend-item';
-      if (!activeCategories.has(category)) {
+      if (colorFilterActive && !activeCategories.has(category)) {
         item.classList.add('inactive');
       }
       
@@ -3236,16 +3110,18 @@
       item.appendChild(label);
       
       item.addEventListener('click', () => {
-        const isOnlyActive = activeCategories.size === 1 && activeCategories.has(category);
-        
+        const isOnlyActive = colorFilterActive && activeCategories.size === 1 && activeCategories.has(category);
+
         if (isOnlyActive) {
           activeCategories.clear();
           uniqueCategories.forEach(cat => activeCategories.add(cat));
+          colorFilterActive = false;
         } else {
           activeCategories.clear();
           activeCategories.add(category);
+          colorFilterActive = true;
         }
-        
+
         updateLegend();
         render();
       });
@@ -3302,7 +3178,7 @@
   /************************************************************************
    * SHAPE LEGEND
    ************************************************************************/
-  const SHAPE_ICONS = { circle: '〇', square: '◻', triangle: '△', diamond: '◇' };
+  const SHAPE_ICONS = { circle: '〇', square: '▢', triangle: '△', diamond: '◇' };
 
   function updateShapeLegend() {
     if (!shapeLegendContainer) return;
@@ -3398,7 +3274,7 @@
       let shouldHighlight = shouldHighlightNode(node);
       
       // If color legend filtering is active, dim non-matching nodes
-      if (activeCategories.size < uniqueCategories.length) {
+      if (colorFilterActive) {
         const nodeCats = getNodeCategories(node);
         if (nodeCats.length === 0 || !nodeCats.some(c => activeCategories.has(c))) {
           shouldHighlight = false;
@@ -3439,7 +3315,7 @@
     // Helper function to check if a node's category is active
     const isNodeCategoryActive = (node) => {
       // Color legend filter
-      if (uniqueCategories.length > 0 && activeCategories.size < uniqueCategories.length) {
+      if (colorFilterActive) {
         const nodeCats = getNodeCategories(node);
         if (nodeCats.length === 0 || !nodeCats.some(c => activeCategories.has(c))) return false;
       }
@@ -4006,7 +3882,6 @@
 
   function clearInfoPanel() {
     nodeTitleEl.html('Click/hover on map or search for a person/group');
-    // nodeMetaEl.text('');
     nodeLinkEl.html('');
     connectionsBox.innerHTML = '';
   }
@@ -4235,9 +4110,9 @@
     .physics-opt b { display: block; margin-bottom: 4px; }
     .physics-opt span { font-size: 12.5px; color: var(--near-black); }
 
-    /* Options panel — covers the left half of the screen */
+    /* Options panel — covers the left part of the screen */
     #options-panel {
-      position: fixed; top: 0; left: 0; height: 100vh; width: 50vw;
+      position: fixed; top: 0; left: 0; height: 100vh; width: 30vw;
       max-width: 720px; z-index: 9000;
       background: var(--white); border-right: 1px solid var(--shadow-grey);
       box-shadow: 4px 0 18px rgba(0,0,0,0.18);
@@ -4574,6 +4449,15 @@
     s.addEventListener('change', () => { formattingSettings[key] = s.value; applyAndRender(restart); });
     r.appendChild(s); parent.appendChild(r); return s;
   }
+  // Like selectRow, but stores the chosen value as a Number (for sizes etc.)
+  function numberSelectRow(parent, labelText, key, options, restart) {
+    const r = rowEl(labelText);
+    const s = document.createElement('select');
+    options.forEach(([val, lab]) => { const o = document.createElement('option'); o.value = String(val); o.textContent = lab; s.appendChild(o); });
+    s.value = String(formattingSettings[key]);
+    s.addEventListener('change', () => { formattingSettings[key] = Number(s.value); applyAndRender(restart); });
+    r.appendChild(s); parent.appendChild(r); return s;
+  }
 
   const STRENGTHS = [['Barely at all', 'Barely at all'], ['A bit', 'A bit'], ['Moderately', 'Moderately'], ['A lot', 'A lot'], ['Strongly', 'Strongly']];
 
@@ -4581,8 +4465,24 @@
     ensureLegendArrays();
     body.innerHTML = '';
 
+    // Data — refresh the live connection to Google Sheets
+    let s = section('Data');
+    const refreshHint = document.createElement('div'); refreshHint.className = 'opt-hint';
+    refreshHint.textContent = 'Reloads the connected Google Sheets. Usually works within 5 sec. of a change to a sheet, but may not refresh recent changes for up to 30 sec.';
+    s.appendChild(refreshHint);
+    const refreshWrap = document.createElement('div'); refreshWrap.className = 'opt-export';
+    const bRefresh = document.createElement('button'); bRefresh.className = 'auth-btn block'; bRefresh.textContent = '↻ Refresh data';
+    bRefresh.addEventListener('click', async () => {
+      bRefresh.disabled = true;
+      const orig = bRefresh.textContent;
+      bRefresh.textContent = 'Refreshing…';
+      try { await refreshData(); }
+      finally { bRefresh.disabled = false; bRefresh.textContent = orig; }
+    });
+    refreshWrap.appendChild(bRefresh); s.appendChild(refreshWrap);
+
     // Title
-    let s = section('Title');
+    s = section('Title');
     checkboxRow(s, 'Show chart title', 'chartTitleEnabled', false);
     textRow(s, 'Chart title', 'chartTitle');
     checkboxRow(s, 'Show subtitle', 'chartSubtitleEnabled', false);
@@ -4630,6 +4530,9 @@
     s = section('Labels');
     selectRow(s, 'Show node labels', 'showNodeLabels', [['hover', 'On hover'], ['always', 'Always']], false);
     selectRow(s, 'Show connection labels', 'showConnectionLabels', [['never', 'Never'], ['hover', 'On hover'], ['always', 'Always']], false);
+    const LABEL_SIZES = [[14, 'Smallest'], [16, 'Small'], [18, 'Normal'], [20, 'Big'], [24, 'Biggest']];
+    numberSelectRow(s, 'Node label size', 'nodeLabelSize', LABEL_SIZES, false);
+    numberSelectRow(s, 'Connection label size', 'connectionLabelSize', LABEL_SIZES, false);
     textRow(s, 'Connection value prefix', 'connectionValuePrefix');
 
     // Background & images
@@ -4816,28 +4719,89 @@
     const ltDisplay = legToggle ? legToggle.style.display : '';
     if (legToggle) legToggle.style.display = 'none';
     const ga = document.getElementById('graph-area');
-    render();
-    await new Promise(r => setTimeout(r, 60));
-    const scale = 4000 / ga.getBoundingClientRect().width;
-    try {
-      const out = await html2canvas(ga, {
-        scale: scale,
-        backgroundColor: formattingSettings.backgroundColor || '#ffffff',
-        useCORS: true,
-        logging: false
-      });
-      const a = document.createElement('a');
-      a.href = out.toDataURL('image/png');
-      a.download = sanitizeFilename(chartName || 'chart') + '.png';
-      document.body.appendChild(a); a.click(); a.remove();
-    } catch (err) {
-      alert('PNG export failed (an image may block cross-origin capture): ' + err.message);
-    } finally {
+
+    // Pause physics so nothing repaints/competes while we capture.
+    const simWasRunning = simulation && simulation.alpha() > simulation.alphaMin();
+    if (simulation) simulation.stop();
+
+    const restoreUI = () => {
       if (topControls) topControls.style.display = tcDisplay;
       if (legToggle) legToggle.style.display = ltDisplay;
       if (!wasCollapsed) optionsPanel.classList.remove('collapsed');
       selectedNode = savedSel; hoveredNode = savedHover; hoveredConnection = savedHoverConn;
+      if (simWasRunning && simulation) simulation.alpha(0.1).restart();
       render();
+    };
+
+    // STEP 1: Snapshot the chart canvas ourselves. html2canvas is unreliable at
+    // rasterizing a live <canvas>, so we never route the chart through it. Paint
+    // and read back-to-back (no await between) so the pixels can't go stale.
+    let chartDataUrl;
+    try {
+      render();
+      chartDataUrl = canvas.toDataURL('image/png');
+    } catch (e) {
+      alert('PNG export blocked: a node/background image is hosted somewhere that does not allow cross-origin use, which taints the canvas. Re-host those images on a CORS-enabled service (e.g. ImgBB / most CDNs) and reload. Details: ' + e.message);
+      restoreUI();
+      return;
+    }
+
+    const rect = ga.getBoundingClientRect();
+    const scale = 4000 / rect.width;
+    const outW = Math.round(rect.width * scale);
+    const outH = Math.round(rect.height * scale);
+
+    try {
+      // STEP 2: Capture ONLY the HTML overlays (title, legend, logo) on a
+      // transparent background, with the chart canvas hidden in the clone so
+      // html2canvas never has to touch a <canvas>.
+      const overlay = await html2canvas(ga, {
+        scale: scale,
+        backgroundColor: null,
+        useCORS: true,
+        logging: false,
+        onclone: (doc) => {
+          // Hide the chart canvas AND strip every opaque background in the
+          // capture, so the overlay layer is transparent except for the actual
+          // title/legend pills. Otherwise graph-area's white background would be
+          // painted on top of the chart, erasing it.
+          const c = doc.querySelector('#graph-area canvas') || doc.querySelector('canvas');
+          if (c) c.style.visibility = 'hidden';
+          const gaClone = doc.getElementById('graph-area');
+          if (gaClone) gaClone.style.background = 'transparent';
+          if (doc.body) doc.body.style.background = 'transparent';
+          if (doc.documentElement) doc.documentElement.style.background = 'transparent';
+        }
+      });
+
+      // STEP 3: Load our chart snapshot as an image.
+      const chartImg = new Image();
+      await new Promise((res, rej) => {
+        chartImg.onload = res;
+        chartImg.onerror = () => rej(new Error('chart snapshot failed to load'));
+        chartImg.src = chartDataUrl;
+      });
+
+      // STEP 4: Composite background + chart + overlays at full resolution.
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = outW;
+      outCanvas.height = outH;
+      const octx = outCanvas.getContext('2d');
+      octx.fillStyle = formattingSettings.backgroundColor || '#ffffff';
+      octx.fillRect(0, 0, outW, outH);
+      octx.imageSmoothingEnabled = true;
+      octx.imageSmoothingQuality = 'high';
+      octx.drawImage(chartImg, 0, 0, outW, outH);   // chart layer (already includes bg/bg-image)
+      octx.drawImage(overlay, 0, 0, outW, outH);    // title + legend on top
+
+      const a = document.createElement('a');
+      a.href = outCanvas.toDataURL('image/png');
+      a.download = sanitizeFilename(chartName || 'chart') + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch (err) {
+      alert('PNG export failed: ' + err.message);
+    } finally {
+      restoreUI();
     }
   }
 
